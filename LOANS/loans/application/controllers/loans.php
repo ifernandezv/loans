@@ -18,6 +18,7 @@ class Loans extends Secure_area implements iData_controller {
       $data['customer_id'] = $this->input->post('customer_id');
       $data['customer_name'] = $this->input->post('customer_name');
       $data['sale_id'] = $this->input->post('sale_id');
+      $data['sale_id_raw'] = $this->input->post('sale_id_raw');
       $data['sale_type'] = $this->input->post('sale_type');
       $data['loan_amount'] = $this->input->post('loan_amount');
 

@@ -164,6 +164,19 @@
           </div>
         </div>
 
+        <div class="field_row clearfix" id="pdv-info" style="display: none'">
+          <?php
+            echo form_label(
+              'Venta:', 
+              'pdv-link', 
+              array('class' => 'wide')
+            );
+          ?>
+          <div class='form_field'>
+            <a href="" target="_blank" id="pdv-link"> </a>
+          </div>
+        </div>
+
         <div class="field_row clearfix">
           <?php 
             echo form_label(
@@ -671,6 +684,7 @@ echo form_close();
   $(document).ready(function () {
     $("#div-form").height($(window).height() - 250);
 
+    $("#pdv-info").hide();
     if($('#customer_id').val() != '') {
       $('#amount').val($('#loan_amount').val());
       $("#sp-customer").html($('#customer_name').val() + ' <span><a href="javascript:void(0)" title="Remove Customer" class="btn-remove-row"><i class="fa fa-times"></i></a></span>');
@@ -680,6 +694,13 @@ echo form_close();
       $('#account').val($('#customer_id').val());
       var description = 'Préstamo generado por la venta ' + $('#sale_id').val() + '.';
       $('#description').val(description);
+
+      var pdv_link = 'http://localhost/pdv/index.php/sales/receipt/' + $('#sale_id_raw').val();
+      var pdv_texto = 'Nota de remisión ' + $('#sale_id').val();
+      $("#pdv-link").attr("href", pdv_link);
+      $("#pdv-link").html(pdv_texto);
+      $("#pdv-info").show();
+
     }
 
     $(document).on("click", ".remove-file", function () {
