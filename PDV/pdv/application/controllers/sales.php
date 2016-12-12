@@ -596,6 +596,7 @@ class Sales extends Secure_area
 		{
 			$cust_info=$this->Customer->get_info($customer_id);
 			$data['customer_id'] = $customer_id;
+			$data['customer_name']=$cust_info->first_name.' '.$cust_info->last_name;
 			$data['customer']=$cust_info->first_name.' '.$cust_info->last_name.($cust_info->company_name==''  ? '' :' - '.$cust_info->company_name).($cust_info->account_number==''  ? '' :' - '.$cust_info->account_number);
 			$data['customer_address_1'] = $cust_info->address_1;
 			$data['customer_address_2'] = $cust_info->address_2;
@@ -735,6 +736,7 @@ class Sales extends Secure_area
 		{
 			$cust_info=$this->Customer->get_info($customer_id);
 			$data['customer_id'] = $customer_id;
+			$data['customer_name']=$cust_info->first_name.' '.$cust_info->last_name;
 			$data['customer']=$cust_info->first_name.' '.$cust_info->last_name.($cust_info->company_name==''  ? '' :' - '.$cust_info->company_name).($cust_info->account_number==''  ? '' :' - '.$cust_info->account_number);
 			$data['customer_address_1'] = $cust_info->address_1;
 			$data['customer_address_2'] = $cust_info->address_2;
@@ -906,6 +908,7 @@ class Sales extends Secure_area
 		{
 			$cust_info=$this->Customer->get_info($customer_id);
 			$data['customer_id'] = $customer_id;
+			$data['customer_name']=$cust_info->first_name.' '.$cust_info->last_name;
 			$data['customer']=$cust_info->first_name.' '.$cust_info->last_name.($cust_info->company_name==''  ? '' :' - '.$cust_info->company_name).($cust_info->account_number==''  ? '' :' - '.$cust_info->account_number);
 			$data['customer_address_1'] = $cust_info->address_1;
 			$data['customer_address_2'] = $cust_info->address_2;
