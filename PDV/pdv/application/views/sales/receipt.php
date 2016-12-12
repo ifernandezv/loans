@@ -42,9 +42,10 @@ if (isset($error_message))
 		?>
 		<div id="sale_id"><?php echo "Nota de Remisión : ".$sale_id; ?></div>
     <input type="hidden" id="sale_id" name="sale_id" value="<?= $sale_id; ?>" />
+    <input type="hidden" id="sale_id_raw" name="sale_id_raw" value="<?= $sale_id_raw; ?>" />
 		<?php if (isset($sale_type)) { ?>
-      <input type="hidden" id="sale_type" name="sale_type" value="<?= $sale_type; ?>" />
 			<div id="sale_type"><?php echo $sale_type; ?></div>
+      <input type="hidden" id="sale_type" name="sale_type" value="<?= $sale_type; ?>" />
 		<?php } ?>
 		
 		<?php
@@ -149,6 +150,7 @@ if (isset($error_message))
 	<tr  style="line-height:8px;" class="gift_receipt_element">
 	<td class="right_text_align "colspan="<?php echo $discount_exists ? '4' : '3'; ?>"><?php echo lang('sales_total'); ?></td>
 	<td class="right_text_align" colspan="1"><?php echo $this->config->item('round_cash_on_sales') && $is_sale_cash_payment ?  to_currency(round_to_nearest_05($total)) : to_currency($total); ?></td>
+    <input type="hidden" id="loan_amount" name="loan_amount" value="<?= ($total); ?>" />
 	</tr>
 
     <tr  style="line-height:8px;"><td colspan="<?php echo $discount_exists ? '5' : '4'; ?>">&nbsp;</td></tr>
@@ -196,7 +198,6 @@ if (isset($error_message))
 	<tr>
 		<td class="right_text_align" colspan="<?php echo $discount_exists ? '4' : '3'; ?>"><?php echo lang('sales_amount_due'); ?></td>
 		<td class="right_text_align" colspan="1"><?php echo $this->config->item('round_cash_on_sales')  && $is_sale_cash_payment ?  to_currency(round_to_nearest_05($amount_change * -1)) : to_currency($amount_change * -1); ?></td>
-    <input type="hidden" id="loan_amount" name="loan_amount" value="<?= ($amount_change * -1); ?>" />
 	</tr>	
 	<?php
 	} 
