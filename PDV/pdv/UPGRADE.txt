@@ -1,0 +1,10 @@
+How to Upgrade
+-------------------------
+1. Replace all code from your point of sale installation with the code downloaded
+2. Run the necessary database upgrades from the database folder. For example if you had
+version 13.2 and are upgrading to 14.3 and would execute the following sql files in order:
+
+database_13.2-14.0.sql
+database_14.0-14.1.sql
+database_14.1-14.2.sql
+database_14.2-14.3.sql

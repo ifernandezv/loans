@@ -1,0 +1,34 @@
+* Suspended sales report
+* Can now track employee commissions and have a different sales person during sale
+* Have the ability to create registers and track cash by register instead of employee
+* Detailed payments report
+* Batch sale + recv. (Upload spreadsheet
+* Added the ability to count denominations for USA bills and coins
+* Added ability to clone items for quick adding
+* Improve performance of customer and supplier searches for reports
+* Now showing quantity column in receiving module
+* Indicate type of sale on receipt
+* Added a credit limit feature for store accounts
+* Improved Spanish translation
+* Fixed bug where show comments on receipt wouldn't stick with cash tracking enabled
+* Store Config is categorized
+* Company information now on store account statement report
+* Store Account statements report can now show sales between any date range
+* Can now hide Barcode on receipts
+* Customer can now be required to complete a sale
+* Show total balance for all store accounts in summary report
+* Fixed a bug where deleted items/item kits could be added to sale/recv. 
+* Added option to round to 2 decimal places for tier pricing
+* Added option to group taxes on receipt
+* Can now attach many item numbers to one product
+* Added total to gift cards summary report
+* Receipt print font size can now be small, medium, large, and extra large
+* Can now scan item to search for it in items module
+* Added Portugues + Dutch + Arabic languages
+* Categories summary report now has the number of items sold in it
+* Added ability to print duplicate receipt without putting in copies
+* Can now email a receipt from sales receipt
+* Show promo price on barcode when applicable
+* Can now hide cost price for item kits as a permission
+* Now showing transfer locations on recv. receipt + update inventory correctly when deleting a recv.
+* Other minor bug fixes
