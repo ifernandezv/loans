@@ -304,6 +304,8 @@
           <div class='form_field'>
             <div class='input-group date' id='paymentdate' style="width: 30%">
               <?php
+                $un_mes = date_create();
+                date_add($un_mes, date_interval_create_from_date_string('1 month'));
                 echo form_input(
                   array(
                     'name' => 'payment_date',
@@ -311,7 +313,7 @@
                     'value' => 
                       (isset($loan_info->loan_payment_date) && $loan_info->loan_payment_date > 0)
                         ? date("d-m-Y", $loan_info->loan_payment_date)
-                        : date("d-m-Y"),
+                        : date_format($un_mes, "d-m-Y"),
                     'class' => 'form-control',
                     'type' => 'datetime'
                   )
