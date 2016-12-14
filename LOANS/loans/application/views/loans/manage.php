@@ -17,6 +17,7 @@
   <input type="hidden" id="customer_id" name="customer_id" value="<?= $customer_id; ?>" />
   <input type="hidden" id="customer_name" name="customer_name" value="<?= $customer_name; ?>" />
   <input type="hidden" id="loan_amount" name="loan_amount" value="<?= $loan_amount; ?>" />
+  <input type="hidden" id="loan_id" name="loan_id" value="<?= $loan_id; ?>" />
   <input type="hidden" id="sale_id" name="sale_id" value="<?= $sale_id; ?>" />
   <input type="hidden" id="sale_id_raw" name="sale_id_raw" value="<?= $sale_id_raw; ?>" />
   <input type="hidden" id="sale_type" name="sale_type" value="<?= $sale_type; ?>" />
@@ -122,7 +123,7 @@
 
     if ($('#loan_amount') && $('#loan_amount').val() > 0) {
       // $('#loan_modal').removeData('bs.modal');
-      $('#loan_modal').modal({remote: 'loans/view/-1' });
+      $('#loan_modal').modal({remote: 'loans/view/'+ $('#loan_id').val() });
       $('#loan_modal').modal('show');
     }
 

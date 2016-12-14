@@ -21,8 +21,8 @@ class Loans extends Secure_area implements iData_controller {
       $data['sale_id_raw'] = $this->input->post('sale_id_raw');
       $data['sale_type'] = $this->input->post('sale_type');
       $data['loan_amount'] = $this->input->post('loan_amount');
+      $data['loan_id'] = $this->Loan->find_sale($data['sale_id_raw']);
 
-      error_log('data: '.print_r($data,true));
       $this->load->view('loans/manage', $data);
     }
 
@@ -192,7 +192,8 @@ class Loans extends Secure_area implements iData_controller {
             'description' => $this->input->post('description'),
             'loan_type_id' => $this->input->post('loan_type_id'),
             'loan_amount' => $this->input->post('amount'),
-      'cuota' => $this->input->post('cuota'),
+            'cuota' => $this->input->post('cuota'),
+            'pdv_id' => $this->input->post('pdv_id'),
             'customer_id' => $this->input->post('customer'),
             'loan_applied_date' => strtotime($this->input->post('apply_date')),
       'loan_payment_date' => strtotime($this->input->post('payment_date')),   //CONTROLAR ACA SI HAY PAGOS ANTERIORES 

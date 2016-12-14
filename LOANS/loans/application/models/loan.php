@@ -5,14 +5,26 @@ class Loan extends CI_Model {
       Determines if a given loan_id is a loan
      */
 
-    function exists($loan_id)
-    {
-        $this->db->from('loans');
-        $this->db->where('loan_id', $loan_id);
-        $query = $this->db->get();
+  function exists($loan_id) {
+    $this->db->from('loans');
+    $this->db->where('loan_id', $loan_id);
+    $query = $this->db->get();
 
-        return ($query->num_rows() == 1);
+    return ($query->num_rows() == 1);
+  }
+
+  function find_sale ($pdv_id) {
+    $this->db->from('loans');
+    $this->db->where('pdv_id', $pdv_id);
+    $query = $this->db->get();
+
+    if ($query->num_rows() == 1) {
+      $result = $query->row();
+      return $result->loan_id;
     }
+
+    return -1;
+  }
 
     function get_all($limit = 10000, $offset = 0, $search = "", $order = [], $status = "")
     {
@@ -187,7 +199,6 @@ class Loan extends CI_Model {
 
     //    $loan_data['loan_payment_date'] = $loan_data['loan_payment_date'];
 
-      error_log('loan_data in loan.save: '.print_r($loan_data,true));
       if (!$loan_id or !$this->exists($loan_id)) {
         $loan_data['loan_balance'] = $this->_get_loan_balance($loan_data);
         $loan_data['loan_pago'] = $loan_data['loan_applied_date'];

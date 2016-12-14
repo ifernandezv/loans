@@ -174,6 +174,7 @@
           ?>
           <div class='form_field'>
             <a href="" target="_blank" id="pdv-link"> </a>
+            <input type="hidden" id="pdv_id" name="pdv_id" value="<?= $loan_info->pdv_id; ?>" />
           </div>
         </div>
 
@@ -687,6 +688,28 @@ echo form_close();
     $("#div-form").height($(window).height() - 250);
 
     $("#pdv-info").hide();
+
+    var pdv_texto = '';
+    var pdv_id = '';
+
+    if ($('#sale_id_raw').val() && $('#sale_id_raw').val() != '') {
+      pdv_id = $('#sale_id_raw').val();
+      pdv_texto = $('#sale_id').val();
+      $('#pdv_id').val($('#sale_id_raw').val());
+    }
+    else if ($('#pdv_id').val() && $('#pdv_id').val() != '') {
+      pdv_id = $('#pdv_id').val();
+      pdv_texto = 'PDV - ' + $('#pdv_id').val();
+    }
+
+    if (pdv_id != '') {
+      var pdv_link = 'http://localhost/pdv/index.php/sales/receipt/' + pdv_id;
+      pdv_texto = 'Nota de remisión ' + pdv_texto;
+      $("#pdv-link").attr("href", pdv_link);
+      $("#pdv-link").html(pdv_texto);
+      $("#pdv-info").show();
+    }
+
     if($('#customer_id').val() != '') {
       $('#amount').val($('#loan_amount').val());
       $("#sp-customer").html($('#customer_name').val() + ' <span><a href="javascript:void(0)" title="Remove Customer" class="btn-remove-row"><i class="fa fa-times"></i></a></span>');
@@ -696,12 +719,6 @@ echo form_close();
       $('#account').val($('#customer_id').val());
       var description = 'Préstamo generado por la venta ' + $('#sale_id').val() + '.';
       $('#description').val(description);
-
-      var pdv_link = 'http://localhost/pdv/index.php/sales/receipt/' + $('#sale_id_raw').val();
-      var pdv_texto = 'Nota de remisión ' + $('#sale_id').val();
-      $("#pdv-link").attr("href", pdv_link);
-      $("#pdv-link").html(pdv_texto);
-      $("#pdv-info").show();
 
     }
 
