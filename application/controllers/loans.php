@@ -793,8 +793,17 @@ class Loans extends Secure_area implements iData_controller {
 
     private function _calculate_mortgage($balance, $rate, $term, $period) {
       $numpagos = $term/$period ;
-      $rate = $rate/100/12*$period;    
-      $result = $rate *-$balance*((pow(1+$rate,$numpagos))/(1-(pow(1+$rate,$numpagos))));  
+      $rate = $rate/100/12*$period;
+      $result = 0;
+      $power = pow(1+$rate,$numpagos);
+
+      if ($rate != 0) {
+        $result = $rate *(-$balance)*$power/(1-$power));
+      }
+      else {
+        $result = -$balance / $numpagos;
+      }
+
       return $result;
     }
 

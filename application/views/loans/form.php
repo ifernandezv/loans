@@ -800,7 +800,7 @@ echo form_close();
 
       $("#loan_type_id").val($(this).val());
       var numpagos = 0;
-      var cuotas =0;
+      var cuota =0;
       var meses  = $("#term_"+id).val();
       var tasa = $("#tasa_"+id).val();      
       var frecuencia = $("#schedule_"+id).val();
@@ -808,8 +808,15 @@ echo form_close();
 
       tasa = tasa/100/12*frecuencia;
       numpagos = meses/frecuencia;
+      var power = Math.pow(1+tasa,numpagos);
 
-      cuota = tasa *-monto*((Math.pow(1+tasa,numpagos))/(1-(Math.pow(1+tasa,numpagos))))       
+      if (tasa != 0) {
+        cuota = tasa *(-monto)*power/(1-power);
+      }
+      else {
+        cuota = -monto / numpagos;
+      }
+
       $("#cuota").val( (cuota).toFixed(2));
 
     });
@@ -818,7 +825,7 @@ echo form_close();
 
       var id = $("#loan_type_id").val();
       var numpagos = 0;
-      var cuotas =0;
+      var cuota =0;
       var meses  = $("#term_"+id).val();
       var tasa = $("#tasa_"+id).val();      
       var frecuencia = $("#schedule_"+id).val();
@@ -826,8 +833,15 @@ echo form_close();
       
       tasa = tasa/100/12*frecuencia;
       numpagos = meses/frecuencia;
+      var power = Math.pow(1+tasa,numpagos);
+
+      if (tasa != 0) {
+        cuota = tasa *(-monto)*power/(1-power);
+      }
+      else {
+        cuota = -monto / numpagos;
+      }
       
-      cuota = tasa *-monto*((Math.pow(1+tasa,numpagos))/(1-(Math.pow(1+tasa,numpagos))));  
       $("#cuota").val( (cuota).toFixed(2));
       
     });
