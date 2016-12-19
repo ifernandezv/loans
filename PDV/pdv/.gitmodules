@@ -1,3 +1,0 @@
-[submodule "tools/translate"]
-	path = tools/translate
-	url = git@github.com:PHP-Point-Of-Sale/PHP-Point-Of-Sale-Translation.git
