@@ -798,10 +798,10 @@ class Loans extends Secure_area implements iData_controller {
       $power = pow(1+$rate,$numpagos);
 
       if ($rate != 0) {
-        $result = $rate *(-$balance)*$power/(1-$power));
+        $result = $rate *(-$balance)*$power/(1-$power);
       }
       else {
-        $result = -$balance / $numpagos;
+        $result = $balance / $numpagos;
       }
 
       return $result;

@@ -814,7 +814,7 @@ echo form_close();
         cuota = tasa *(-monto)*power/(1-power);
       }
       else {
-        cuota = -monto / numpagos;
+        cuota = monto / numpagos;
       }
 
       $("#cuota").val( (cuota).toFixed(2));
@@ -839,7 +839,7 @@ echo form_close();
         cuota = tasa *(-monto)*power/(1-power);
       }
       else {
-        cuota = -monto / numpagos;
+        cuota = monto / numpagos;
       }
       
       $("#cuota").val( (cuota).toFixed(2));
