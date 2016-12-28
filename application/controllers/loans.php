@@ -755,7 +755,7 @@ class Loans extends Secure_area implements iData_controller {
       $data[0]['balance2'] = to_currency($balance - $capital);
       $balance = $balance - $capital;
 
-      for ($i = 1; $i < ($term/$period); $i++) {
+      for ($i = 1; $i < ($term/$period)-1; $i++) {
 
         $interes = $balance*((($rate/100)/12)*$period);
         $capital = $pay - $interes;
@@ -772,6 +772,25 @@ class Loans extends Secure_area implements iData_controller {
         $data[$i]['balance2'] = to_currency($balance - $capital);
         $balance = $balance - $capital;
       }
+	   
+	 	$interes = $balance*((($rate/100)/12)*$period);
+		
+		$cuota = $balance + $interes;
+        $data[$i]['month'] = date("d M Y", $payment_date);
+
+        $payment_date = strtotime($days_to_add, $payment_date);
+
+        //$balance = $balance - $capital;
+        $data[$i]['balance'] = to_currency($balance);
+        $data[$i]['interest'] = to_currency($interes);
+        $data[$i]['pay'] = to_currency($cuota);
+        $data[$i]['capital'] = to_currency($balance);
+        $data[$i]['balance2'] = to_currency(0);
+      //  $balance = $balance - $capital;
+ 
+
+	  
+	  
 
       return $data;
     }
