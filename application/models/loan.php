@@ -140,43 +140,41 @@ class Loan extends CI_Model {
       Gets information about a particular loan
      */
 
-    function get_info($loan_id)
-    {
-        $select = "loans.*, CONCAT(customer.first_name, ' ', customer.last_name) as customer_name, 
-                   CONCAT(agent.first_name, ' ',agent.last_name) as agent_name, 
-                   CONCAT(approver.first_name, ' ', approver.last_name) as approver_name";
-        $this->db->select($select, FALSE);
-        $this->db->from('loans');
-        $this->db->join('pdv.people as customer', 'customer.person_id = loans.customer_id', 'LEFT');
-        $this->db->join('pdv.people as agent', 'agent.person_id = loans.loan_agent_id', 'LEFT');
-        $this->db->join('pdv.people as approver', 'approver.person_id = loans.loan_approved_by_id', 'LEFT');
-        $this->db->where('loan_id', $loan_id);
+    function get_info($loan_id) {
+      $select = "loans.*, CONCAT(customer.first_name, ' ', customer.last_name) as customer_name, 
+                 CONCAT(agent.first_name, ' ',agent.last_name) as agent_name, 
+                 CONCAT(approver.first_name, ' ', approver.last_name) as approver_name";
+      $this->db->select($select, FALSE);
+      $this->db->from('loans');
+      $this->db->join('pdv.people as customer', 'customer.person_id = loans.customer_id', 'LEFT');
+      $this->db->join('pdv.people as agent', 'agent.person_id = loans.loan_agent_id', 'LEFT');
+      $this->db->join('pdv.people as approver', 'approver.person_id = loans.loan_approved_by_id', 'LEFT');
+      $this->db->where('loan_id', $loan_id);
 
-        $query = $this->db->get();
+      $query = $this->db->get();
 
-        if ($query->num_rows() == 1)
+      if ($query->num_rows() == 1) {
+        //error_log('get_info: '.print_r($query->row(), true));
+        return $query->row();
+      }
+      else {
+        //Get empty base parent object, as $loan_id is NOT a loan
+        $loan_obj = new stdClass();
+
+        //Get all the fields from items table
+        $fields = $this->db->list_fields('loans');
+
+        foreach ($fields as $field)
         {
-            return $query->row();
+            $loan_obj->$field = '';
         }
-        else
-        {
-            //Get empty base parent object, as $loan_id is NOT a loan
-            $loan_obj = new stdClass();
 
-            //Get all the fields from items table
-            $fields = $this->db->list_fields('loans');
+        $loan_obj->loan_id = -1;
+        $loan_obj->customer_name = '';
+        $loan_obj->loan_status = 'pending';
 
-            foreach ($fields as $field)
-            {
-                $loan_obj->$field = '';
-            }
-
-            $loan_obj->loan_id = -1;
-            $loan_obj->customer_name = '';
-            $loan_obj->loan_status = 'pending';
-
-            return $loan_obj;
-        }
+        return $loan_obj;
+      }
     }
 
     /*
