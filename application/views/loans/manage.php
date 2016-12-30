@@ -181,6 +181,7 @@
       set_feedback(response.message, 'success_message', false);
       $('#datatable').dataTable()._fnAjaxUpdate();
       $('#loan_modal').modal("hide");
+      $('#customer_id').val('');
     }
   }
 </script>
