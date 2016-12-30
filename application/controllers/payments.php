@@ -300,6 +300,8 @@ class Payments extends Secure_area implements iData_controller {
         $fecha_cobro = $loan->loan_payment_date;    //FECHA Q SE DEBE COBRAR 
         $ultima_fecha_pago = $loan->loan_pago;
         $interes = $loan_type_info->percent_charge1; 
+
+        $interes_actual = 0;
         
         $dias_transcurridos = intval(abs($fecha_pago - $ultima_fecha_pago)/60/60/24);  //DÍAS ENTRE FECHA DE PAGO ACTUAL VS ULTIMA FECHA DE PAGO
         $diferencia = 1;
