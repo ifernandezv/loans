@@ -21,7 +21,7 @@ class Loans extends Secure_area implements iData_controller {
       $data['sale_id_raw'] = $this->input->post('sale_id_raw');
       $data['sale_type'] = $this->input->post('sale_type');
       $data['loan_amount'] = $this->input->post('loan_amount');
-      $data['sale_loan_id'] = $this->Loan->find_sale($data['sale_id_raw']);
+      $data['loan_id'] = $this->Loan->find_sale($data['sale_id_raw']);
 
       $this->load->view('loans/manage', $data);
     }
