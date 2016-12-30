@@ -711,6 +711,7 @@ echo form_close();
     }
 
     if($('#customer_id').val() != '') {
+      $('#customer').val($('#customer_id').val());
       $('#amount').val($('#loan_amount').val());
       $("#sp-customer").html($('#customer_name').val() + ' <span><a href="javascript:void(0)" title="Remove Customer" class="btn-remove-row"><i class="fa fa-times"></i></a></span>');
       $("#sp-customer").show();
