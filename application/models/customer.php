@@ -27,8 +27,8 @@ class Customer extends Person {
     {
         $sorter = array("", "customers.person_id", "last_name", "first_name", "email", "phone_number");
 
-        $this->db->from('pdv.phppos_customers as customers');
-        $this->db->join('pdv.phppos_people as people', 'customers.person_id=people.person_id');
+        $this->db->from('pdv.customers as customers');
+        $this->db->join('pdv.people as people', 'customers.person_id=people.person_id');
         $this->db->where('deleted', 0);
 
         $employee_id = $this->session->userdata('person_id');
