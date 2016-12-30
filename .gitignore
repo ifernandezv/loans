@@ -17,7 +17,8 @@ local.properties
 .loadpath
 .sql
 database/*
-aplication/config/config.php
+application/config/config.php
+application/config/database.php
 
 # External tool builders
 .externalToolBuilders/
