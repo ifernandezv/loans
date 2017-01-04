@@ -225,10 +225,11 @@ class Loan extends CI_Model {
   
     function ultima_fecha_pago($loan_id) {
       $maxid = $this->db->query('
-        SELECT MAX(loan_payment_id) AS `maxid` 
+        SELECT loan_payment_id AS `maxid` 
         FROM `kpos_loan_payments` 
         WHERE loan_id = '.$loan_id.' AND delete_flag = 0
-        ')->row()->maxid;
+        ORDER BY date_paid desc
+        LIMIT 1')->row()->maxid;
       return $maxid; 
     }
 
