@@ -132,14 +132,21 @@ class Payment extends CI_Model {
     if (!$payment_id or ! $this->exists($payment_id)) {
       if ($this->db->insert('loan_payments', $payment_data)) {
         $payment_data['loan_payment_id'] = $this->db->insert_id();
-        return true;
       }
-      return false;
+      else {
+        return false;
+      }
     }
 
     $payment_data['date_modified'] = time();
     $this->db->where('loan_payment_id', $payment_id);
-    return $this->db->update('loan_payments', $payment_data);
+    if ($this->db->update('loan_payments', $payment_data)) {
+      $query = '
+        UPDATE kpos_loans
+        SET loan_pago = \'' . $payment_data['date_paid'] . '\'
+        WHERE loan_id = '.$payment_data['loan_id'];
+      return $this->db->query($query);
+    }
   }
 
   /*
