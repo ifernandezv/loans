@@ -741,59 +741,29 @@ class Loans extends Secure_area implements iData_controller {
       $days = ($payment_date - $applied_date)/(3600*24);
 
       $interes = $balance*((($rate/100)/365)*$days);
+      $extra_interest = $interes / ($term/$period);
+      $final_monthly_payment = $pay + $extra_interest;
 
-      $capital = $pay - $interes;
+      for ($i = 0; $i < ($term/$period); $i++) {
 
-      $data[0]['month'] = date("d M Y", $payment_date);
-
-      $payment_date = strtotime($days_to_add, $payment_date);
-
-      $data[0]['balance'] = to_currency($balance);
-      $data[0]['interest'] = to_currency($interes);
-      $data[0]['pay'] = to_currency($pay);
-      $data[0]['capital'] = to_currency($capital);
-      $data[0]['balance2'] = to_currency($balance - $capital);
-      $balance = $balance - $capital;
-
-      for ($i = 1; $i < ($term/$period)-1; $i++) {
-
-        $interes = $balance*((($rate/100)/12)*$period);
-        $capital = $pay - $interes;
+        $interes = $balance*((($rate/100)/12)*$period) + $extra_interest;
+        $capital = $final_monthly_payment - $interes;
 
         $data[$i]['month'] = date("d M Y", $payment_date);
 
         $payment_date = strtotime($days_to_add, $payment_date);
 
-        //$balance = $balance - $capital;
         $data[$i]['balance'] = to_currency($balance);
         $data[$i]['interest'] = to_currency($interes);
-        $data[$i]['pay'] = to_currency($pay);
+        $data[$i]['pay'] = to_currency($final_monthly_payment);
         $data[$i]['capital'] = to_currency($capital);
         $data[$i]['balance2'] = to_currency($balance - $capital);
         $balance = $balance - $capital;
       }
-	   
-	 	$interes = $balance*((($rate/100)/12)*$period);
-		
-		$cuota = $balance + $interes;
-        $data[$i]['month'] = date("d M Y", $payment_date);
-
-        $payment_date = strtotime($days_to_add, $payment_date);
-
-        //$balance = $balance - $capital;
-        $data[$i]['balance'] = to_currency($balance);
-        $data[$i]['interest'] = to_currency($interes);
-        $data[$i]['pay'] = to_currency($cuota);
-        $data[$i]['capital'] = to_currency($balance);
-        $data[$i]['balance2'] = to_currency(0);
-      //  $balance = $balance - $capital;
- 
-
-	  
-	  
 
       return $data;
     }
+
 
     private function _get_period($period_type, $is_yearly = true) {
 
