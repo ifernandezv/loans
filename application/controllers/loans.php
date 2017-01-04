@@ -175,69 +175,82 @@ class Loans extends Secure_area implements iData_controller {
         return $tmp;
     }
 
-    function save($loan_id = -1)
-    {
+    function save($loan_id = -1) {
 
-        $fees = $this->input->post("fees");
-        $amounts = $this->input->post("amounts");
+      $fees = $this->input->post("fees");
+      $amounts = $this->input->post("amounts");
 
-        $misc_fees = array();
-        for ($i = 0; $i < count($fees); $i++):
-            $misc_fees[$fees[$i]] = $amounts[$i];
-        endfor;
+      $misc_fees = array();
+      for ($i = 0; $i < count($fees); $i++) {
+          $misc_fees[$fees[$i]] = $amounts[$i];
+      }
 
+      $loan_data = array(
+        'account' => $this->input->post('account'),
+        'description' => $this->input->post('description'),
+        'loan_type_id' => $this->input->post('loan_type_id'),
+        'loan_amount' => $this->input->post('amount'),
+        'cuota' => $this->input->post('cuota'),
+        'pdv_id' => $this->input->post('pdv_id'),
+        'customer_id' => $this->input->post('customer'),
+        'loan_applied_date' => strtotime($this->input->post('apply_date')),
+        //CONTROLAR ACA SI HAY PAGOS ANTERIORES 
+        'loan_payment_date' => strtotime($this->input->post('payment_date')),
+        'remarks' => $this->input->post('remarks'),
+        'loan_agent_id' => $this->input->post('agent'),
+        'loan_approved_by_id' => $this->input->post('approver'),
+        'loan_status' => 
+          ($this->input->post('approver') > 0)
+          ? "approved"
+          : $this->input->post("status"),
+        'misc_fees' => json_encode($misc_fees)
+      );
 
-        $loan_data = array(
-            'account' => $this->input->post('account'),
-            'description' => $this->input->post('description'),
-            'loan_type_id' => $this->input->post('loan_type_id'),
-            'loan_amount' => $this->input->post('amount'),
-            'cuota' => $this->input->post('cuota'),
-            'pdv_id' => $this->input->post('pdv_id'),
-            'customer_id' => $this->input->post('customer'),
-            'loan_applied_date' => strtotime($this->input->post('apply_date')),
-      'loan_payment_date' => strtotime($this->input->post('payment_date')),   //CONTROLAR ACA SI HAY PAGOS ANTERIORES 
-            'remarks' => $this->input->post('remarks'),
-            'loan_agent_id' => $this->input->post('agent'),
-            'loan_approved_by_id' => $this->input->post('approver'),
-            'loan_status' => ($this->input->post('approver') > 0) ? "approved" : $this->input->post("status"),
-            'misc_fees' => json_encode($misc_fees)
-        );
+      $guarantee_data = array(
+        'loan_id' => $loan_id,
+        'name' => $this->input->post("guarantee_type"),
+        'type' => $this->input->post("guarantee_name"),
+        'brand' => $this->input->post("guarantee_brand"),
+        'make' => $this->input->post("guarantee_make"),
+        'serial' => $this->input->post("guarantee_serial"),
+        'proof' => json_encode($this->input->post("proofs")),
+        'images' => json_encode($this->input->post("images")),
+        'price' => $this->input->post("guarantee_price"),
+        'observations' => $this->input->post("guarantee_observations")
+      );
 
-        $guarantee_data = array(
-            'loan_id' => $loan_id,
-            'name' => $this->input->post("guarantee_type"),
-            'type' => $this->input->post("guarantee_name"),
-            'brand' => $this->input->post("guarantee_brand"),
-            'make' => $this->input->post("guarantee_make"),
-            'serial' => $this->input->post("guarantee_serial"),
-            'proof' => json_encode($this->input->post("proofs")),
-            'images' => json_encode($this->input->post("images")),
-            'price' => $this->input->post("guarantee_price"),
-            'observations' => $this->input->post("guarantee_observations")
-        );
-
-        if ($this->Loan->save($loan_data, $loan_id))
-        {
-            //New Loan
-            if ($loan_id == -1)
-            {
-                echo json_encode(array('success' => true, 'message' => $this->lang->line('loans_successful_adding') . ' ' .
-                    $loan_data['account'], 'loan_id' => $loan_data['loan_id']));
-                $loan_id = $loan_data['loan_id'];
-            }
-            else //previous loan
-            {
-                echo json_encode(array('success' => true, 'message' => $this->lang->line('loans_successful_updating') . ' ' .
-                    $loan_data['account'], 'loan_id' => $loan_id));
-            }
-            $this->Guarantee->save($guarantee_data, $loan_id);
+      if ($this->Loan->save($loan_data, $loan_id)) {
+        //New Loan
+        if ($loan_id == -1) {
+          echo json_encode(
+            array(
+              'success' => true,
+              'message' => $this->lang->line('loans_successful_adding').' '.$loan_data['account'],
+              'loan_id' => $loan_data['loan_id']
+            )
+          );
+          $loan_id = $loan_data['loan_id'];
         }
-        else//failure
-        {
-            echo json_encode(array('success' => false, 'message' => $this->lang->line('loans_error_adding_updating') . ' ' .
-                $loan_data['account'], 'loan_id' => -1));
+        else { //previous loan
+          echo json_encode(
+            array(
+              'success' => true,
+              'message' => $this->lang->line('loans_successful_updating').' '.$loan_data['account'],
+              'loan_id' => $loan_id
+            )
+          );
         }
+        $this->Guarantee->save($guarantee_data, $loan_id);
+      }
+      else { //failure
+        echo json_encode(
+          array(
+            'success' => false,
+            'message' => $this->lang->line('loans_error_adding_updating').' '.$loan_data['account'],
+            'loan_id' => -1
+          )
+        );
+      }
     }
 
     function delete()
@@ -264,8 +277,7 @@ class Loans extends Secure_area implements iData_controller {
         return 360;
     }
 
-    function data($status = "")
-    {
+    function data($status = "") {
         $order = array("index" => $_GET['order'][0]['column'], "direction" => $_GET['order'][0]['dir']);
         $loans = $this->Loan->get_all($_GET['length'], $_GET['start'], $_GET['search']['value'], $order, $status);
 

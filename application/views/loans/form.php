@@ -702,15 +702,16 @@ echo form_close();
       pdv_texto = 'PDV - ' + $('#pdv_id').val();
     }
 
-    if (pdv_id != '') {
-      var pdv_link = 'http://localhost/pdv/index.php/sales/receipt/' + pdv_id;
-      pdv_texto = 'Nota de remisión ' + pdv_texto;
-      $("#pdv-link").attr("href", pdv_link);
-      $("#pdv-link").html(pdv_texto);
-      $("#pdv-info").show();
-    }
-
     if($('#customer_id').val() != '') {
+      if (pdv_id != '') {
+        var pdv_link = 'http://localhost/pdv/index.php/sales/receipt/' + pdv_id;
+        pdv_texto = 'Nota de remisión ' + pdv_texto;
+        $("#pdv-link").attr("href", pdv_link);
+        $("#pdv-link").html(pdv_texto);
+        $("#pdv-info").show();
+      }
+
+      $('#customer').val($('#customer_id').val());
       $('#amount').val($('#loan_amount').val());
       $("#sp-customer").html($('#customer_name').val() + ' <span><a href="javascript:void(0)" title="Remove Customer" class="btn-remove-row"><i class="fa fa-times"></i></a></span>');
       $("#sp-customer").show();
