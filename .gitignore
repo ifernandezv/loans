@@ -16,7 +16,9 @@ local.properties
 .settings/
 .loadpath
 .sql
-database/*
+js/
+downloads/
+database/
 application/config/config.php
 application/config/database.php
 
