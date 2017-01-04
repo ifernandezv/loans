@@ -74,13 +74,6 @@
             </tr>
         </table>
 
-        <table class="table">
-            <tr>
-                <td><?= $payment_sched; ?>:</td>
-                <td style="text-align: right"><?= $repayment_amount; ?></td>
-            </tr>
-        </table>    
-        
         <div>
             <table width="100%" class="custom_table">
                 <tr>
