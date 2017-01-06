@@ -738,7 +738,8 @@ class Loans extends Secure_area implements iData_controller {
           break;   
       }
 
-      $days = ($payment_date - $applied_date)/(3600*24);
+      $extra_days = strtotime($days_to_add, $applied_date);
+      $days = ($payment_date - $extra_days)/(3600*24);
 
       $interes = $balance*((($rate/100)/365)*$days);
       $extra_interest = $interes / ($term/$period);
