@@ -738,14 +738,42 @@ class Loans extends Secure_area implements iData_controller {
           break;   
       }
 
+      $primer_mes = 0;
+      $extra_interest = 0;
+
       $extra_days = strtotime($days_to_add, $applied_date);
       $days = ($payment_date - $extra_days)/(3600*24);
 
       $interes = $balance*((($rate/100)/365)*$days);
-      $extra_interest = $interes / ($term/$period);
+
+      if ($days < 0) {
+
+        $data[0]['month'] = date("d M Y", $payment_date);
+        $payment_date = strtotime($days_to_add, $payment_date);
+
+        $primer_mes_interes = $balance*((($rate/100)/12)*$period) + $interes;
+        $primer_pago = $pay + $interes;
+
+        $capital = $primer_pago - $primer_mes_interes;
+
+        $data[0]['balance'] = to_currency($balance);
+        $data[0]['interest'] = to_currency($primer_mes_interes);
+        $data[0]['pay'] = to_currency($primer_pago);
+        $data[0]['capital'] = to_currency($capital);
+        $data[0]['balance2'] = to_currency($balance - $capital);
+        $balance = $balance - $capital;
+
+        $primer_mes = 1;
+        $extra_interest = 0;
+      }
+      else {
+        $primer_mes = 0;
+        $extra_interest = $interes / ($term/$period);
+      }
+
       $final_monthly_payment = $pay + $extra_interest;
 
-      for ($i = 0; $i < ($term/$period); $i++) {
+      for ($i = $primer_mes; $i < ($term/$period); $i++) {
 
         $interes = $balance*((($rate/100)/12)*$period) + $extra_interest;
         $capital = $final_monthly_payment - $interes;
