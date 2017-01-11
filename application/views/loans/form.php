@@ -346,6 +346,17 @@
             <!--
             <?php echo isset($loan_info->agent_name) ? ucwords($loan_info->agent_name) : ucwords($user_info->first_name . " " . $user_info->last_name); ?>
             -->
+            <?php
+                echo form_input(
+                  array(
+                    'name' => 'fechas_bien',
+                    'id' => 'fechas_bien',
+                    'value' => '',
+                    'class' => 'form-control',
+                    'type' => 'hidden',
+                  )
+                );
+            ?>
             <input type="hidden" id="agent" name="agent" value="<?= ($loan_info->loan_agent_id > 0 ? $loan_info->loan_agent_id : $user_info->person_id) ?>" />
             <input type="hidden" id="approver" name="approver" value="<?= $loan_info->loan_approved_by_id; ?>" />
           </div>
@@ -927,17 +938,34 @@ echo form_close();
       },
       errorLabelContainer: "#error_message_box",
       wrapper: "li",
+      ignore: [],
       rules: {
+        fechas_bien: "required",
         loan_type: "required",
         account: "required",
         amount: "required",
         "inp-customer": "required"
       },
       messages: {
+        fechas_bien: "<?php echo 'La fecha de pago no puede ser anterior a la fecha del préstamo.'; ?>",
         loan_type: "<?php echo $this->lang->line('loans_type_required'); ?>",
         account: "<?php echo $this->lang->line('loans_account_required'); ?>",
         amount: "<?php echo $this->lang->line('loans_amount_required'); ?>",
         "inp-customer": "<?php echo $this->lang->line('loans_customer_required'); ?>"
+      }
+    });
+
+    $("#btn-save").click(function () {
+      var ad_arr = ($('#apply_date').val()).split('-');
+      var pd_arr = ($('#payment_date').val()).split('-');
+
+      var ad = new Date(ad_arr[2],ad_arr[1]-1,ad_arr[0]);
+      var pd = new Date(pd_arr[2],pd_arr[1]-1,pd_arr[0]);
+      if ( ad > pd ) {
+        $('#fechas_bien').val('');
+      }
+      else {
+        $('#fechas_bien').val('bien');
       }
     });
   });
