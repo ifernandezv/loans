@@ -232,12 +232,12 @@
               case "biweekly": // 4 weeks in 1month
                 $factor = 1/2;
                 break;
-              case "quarterly": // 4 weeks in 1month
-                $factor = 3;
-              break;  
               case "monthly": // 1 month in 1month
                 $factor = 1;
                 break;
+              case "quarterly": // 3 months in 1 quarter
+                $factor = 3;
+              break;
               case "biannual":
                 $factor = 6;
                 break;
@@ -807,70 +807,88 @@ echo form_close();
       });
     });
 
-    $("#loan_type").change(function () {
-      var id = $(this).val();
-
-      $("#loan_type_id").val($(this).val());
-      var numpagos = 0;
-      var cuota =0;
-      var meses  = $("#term_"+id).val();
-      var tasa = $("#tasa_"+id).val();      
-      var frecuencia = $("#schedule_"+id).val();
-      var monto = $("#amount").val();
-
-      tasa = tasa/100/12*frecuencia;
-      numpagos = meses/frecuencia;
-      var power = Math.pow(1+tasa,numpagos);
-
-      if (tasa != 0) {
-        cuota = tasa *(-monto)*power/(1-power);
-      }
-      else {
-        cuota = monto / numpagos;
-      }
-
-      $("#cuota").val( (cuota).toFixed(2));
-
-    });
-    
-    $("#amount").change(function () {
-
+    function calculate_cuota() {
       var id = $("#loan_type_id").val();
-      var numpagos = 0;
-      var cuota =0;
       var meses  = $("#term_"+id).val();
       var tasa = $("#tasa_"+id).val();      
       var frecuencia = $("#schedule_"+id).val();
       var monto = $("#amount").val();
-      
+
+      var ad_arr = ($('#apply_date').val()).split('-');
+      var pd_arr = ($('#payment_date').val()).split('-');
+
+      var ad = new Date(ad_arr[2],ad_arr[1]-1,ad_arr[0]);
+      var fecha_periodo =
+        new Date(
+          parseInt(ad_arr[2])+Math.floor((ad_arr[1]-1+frecuencia)/12), //año ajustado por frecuencia
+          (ad_arr[1]-1+frecuencia)%12, // mes ajustado por frecuencia
+          ad_arr[0] // mismo día
+        );
+      var pd = new Date(pd_arr[2],pd_arr[1]-1,pd_arr[0]);
+
+      var dias = (pd - ad) / (24 * 3600 * 1000);
+      var dias_periodo = (fecha_periodo - ad) / (24 * 3600 * 1000);
+
+      var numpagos = 0;
+      var cuota =0;
+
+      var tasa_diaria = (tasa/100)/365;
       tasa = tasa/100/12*frecuencia;
       numpagos = meses/frecuencia;
-      var power = Math.pow(1+tasa,numpagos);
 
       if (tasa != 0) {
+        var power = Math.pow(1+tasa,numpagos);
         cuota = tasa *(-monto)*power/(1-power);
       }
       else {
         cuota = monto / numpagos;
       }
-      
-      $("#cuota").val( (cuota).toFixed(2));
-      
+
+      if ( dias > dias_periodo ) { // ajustar cuota con prorrateo de interés extra
+        var diff = dias - dias_periodo;
+        var extra_interes = monto * tasa_diaria * diff;
+        var prorrata = extra_interes / numpagos;
+
+        cuota += prorrata;
+      }
+
+      return (cuota).toFixed(2);
+
+    }
+
+    $("#apply_date").change(function () {
+      var cuota = calculate_cuota();
+      $("#cuota").val(cuota);
+    });
+
+    $("#payment_date").change(function () {
+      var cuota = calculate_cuota();
+      $("#cuota").val(cuota);
+    });
+
+    $("#amount").change(function () {
+      var cuota = calculate_cuota();
+      $("#cuota").val(cuota);
+    });
+
+    $("#loan_type").change(function () {
+      $("#loan_type_id").val($(this).val());
+      var cuota = calculate_cuota();
+      $("#cuota").val(cuota);
     });
 
     $("#sel_agent").change(function () {
       $("#agent").val($(this).val());
     });
 
-    $("#btn-approve").click(function () {
-      $("#approver").val($("#user_info").val());
-      $("#loan_form").submit();
-    });
-
     if ($("#agent").val() <= 0) {
       $("#agent").val($("#user_info").val());
     }
 
+    $("#btn-approve").click(function () {
+      $("#approver").val($("#user_info").val());
+      $("#loan_form").submit();
+    });
 
     if ($("#loan_id").val() > -1) {
       $("#loan_form input, textarea").prop("readonly", true);
