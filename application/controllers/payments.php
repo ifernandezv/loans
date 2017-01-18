@@ -46,6 +46,7 @@ class Payments extends Secure_area implements iData_controller {
       foreach ($res as $loan) {
         $tmp['loan_id'] = $loan->loan_id;
         $tmp['balance'] = $loan->loan_balance;
+        $tmp['interes_actual'] = $loan->interes_actual;
         /// VERIFICAR SI TIENE PAGOS ATRASADOS   
       
         $loan_type_info = $this->Loan_type->get_info($loan->loan_type_id);
@@ -88,13 +89,12 @@ class Payments extends Secure_area implements iData_controller {
                        date("d/m/Y", $loan->loan_applied_date) .
                         ") - Saldo A: " . to_currency($loan->loan_balance);
         $tmp['multa'] = 5;
-        $tmp['fecha_pago'] = $fecha_cobro;
+        $tmp['fecha_pago'] = date("d-m-Y", $fecha_cobro);
 
         $loans[] = $tmp;
       }
 
       $data['loans'] = $loans;
-// error_log(print_r($data,true));
       $this->load->view("payments/form", $data);
     }
 
@@ -163,8 +163,6 @@ class Payments extends Secure_area implements iData_controller {
       if ($this->input->post("loan_payment_id") > 0) {
         $payment_data['loan_payment_id'] = $this->input->post('loan_payment_id');
       }
-
-      error_log('payment_data in payment.save: '.print_r($payment_data,true));
 
       // transactional to make sure that everything is working well
       $this->db->trans_start();
