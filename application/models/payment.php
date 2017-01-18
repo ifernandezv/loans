@@ -80,7 +80,7 @@ class Payment extends CI_Model {
   function get_info($payment_id) {
     $select = "loan_payments.*, CONCAT(customer.first_name, ' ', customer.last_name) as customer_name, 
                CONCAT(teller.first_name, ' ',teller.last_name) as teller_name, 
-               loan_types.name as loan_type";
+               loan_types.name as loan_type, 3 as interes_actual";
 
     $this->db->select($select, FALSE);
     $this->db->from('loan_payments');
@@ -221,7 +221,7 @@ description LIKE '%" . $this->db->escape_like_str($search) . "%'");
 
   function get_loans($customer_id) {
 //        $this->db->select('loans.*, loan_types.name as loan_type, loan_types.term as loan_term, loan_payments.multa as multa');
-    $this->db->select('loans.*, loan_types.name as loan_type, loan_types.term as loan_term');
+    $this->db->select('loans.*, loan_types.name as loan_type, loan_types.term as loan_term, loans.account as interes_actual');
     $this->db->from('loans');
     $this->db->join('loan_types', "loan_types.loan_type_id = loans.loan_type_id");
 //        $this->db->join('loan_payments', "loan_payments.loan_id = loans.loan_id");
@@ -229,7 +229,10 @@ description LIKE '%" . $this->db->escape_like_str($search) . "%'");
     $this->db->where("customer_id >", 0);
     $this->db->where("delete_flag", 0);
     $this->db->where("loan_balance > ", 0);
-    return $this->db->get()->result();
+//    $result = $this->db->_compile_select();
+    $result = $this->db->get()->result();
+//    error_log('result en get_loans: '.print_r($result,true));
+    return $result;
   }
 }
 
