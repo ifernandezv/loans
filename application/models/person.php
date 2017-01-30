@@ -36,7 +36,7 @@ class Person extends CI_Model {
 
     function get_info($person_id)
     {
-        $query = $this->db->get_where('people', array('person_id' => $person_id), 1);
+        $query = $this->db->get_where('pdv.people', array('person_id' => $person_id), 1);
 
         if ($query->num_rows() == 1)
         {
@@ -45,7 +45,7 @@ class Person extends CI_Model {
         else
         {
             //create object with empty properties.
-            $fields = $this->db->list_fields('people');
+            $fields = $this->db->list_fields('pdv.people');
             $person_obj = new stdClass;
 
             foreach ($fields as $field)
