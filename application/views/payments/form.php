@@ -99,20 +99,23 @@
           <?php 
             $balance_amount = '';
             $loancuota = '';
+            $interes = '';
 
             foreach ($loans as $loan) {
-              $selected = ''; 
-              $loancuota = $loan['cuota'];
+              $selected = '';
               if ($loan['loan_id'] === $payment_info->loan_id) {
                 $selected = 'selected="selected"';
                 $balance_amount = $loan['balance'];
+                $loancuota = $loan['cuota'];
+                $interes = $loan['interes'];
               }
             ?>
-              <option value="<?= $loan['loan_id'] ?>" <?= $selected; ?>  data-balance="<?= $loan['balance']; ?>"  data-cuota="<?= $loan['cuota']; ?>" data-multa="<?= $payment_info->multa; ?>" data-fecha_pago="<?= $loan['fecha_pago']; ?>"><?= $loan['text']; ?> </option>                 
+              <option value="<?= $loan['loan_id'] ?>" <?= $selected; ?>  data-loan_balance="<?= $loan['balance']; ?>"  data-cuota="<?= $loan['cuota']; ?>" data-interes="<?= $loan['interes']; ?>" data-fecha_pago="<?= $loan['fecha_pago']; ?>" data-interes_actual="<?= $loan['interes_actual']; ?>"><?= $loan['text']; ?> </option>                 
           <?php } ?>
         </select>
         <input type="hidden" name="balance_amount" id="balance_amount" value="<?= $balance_amount; ?>" />
         <input type="hidden" name="cuota" id="cuota" value="<?= $loancuota; ?>" />
+        <input type="hidden" name="interes" id="interes" value="<?= $interes; ?>" />
             
             </div>
         </div>
@@ -120,7 +123,7 @@
         <div class="field_row clearfix">
           <?php 
             echo form_label('Interés Actual a la Fecha:', 
-                            'interes_act', 
+                            'interes_actual', 
                             array('class' => 'wide required')
                   );
           ?>
@@ -132,7 +135,7 @@
        <div class="field_row clearfix">
           <?php 
             echo form_label($this->lang->line('payments_date') . ':',
-                            'payment_date',
+                            'date_paid',
                             array('class' => 'wide required')
                   );
           ?>
@@ -153,13 +156,6 @@
                   <span class="glyphicon glyphicon-calendar"></span>
                 </span>
               </div>
-              <script type="text/javascript">
-                $(function () {
-                    $('#applydate, #fecha_ultimo_pago').datetimepicker({
-                        format: 'DD-MM-YYYY'
-                    });
-                });
-              </script>
             </div>
         </div>
         <div class="field_row clearfix">
@@ -176,7 +172,7 @@
                       array(
                         'name' => 'fecha_pago',
                         'id' => 'fecha_pago',
-                        'value' =>(isset($payment_info->fecha_pago) && $payment_info->fecha_pago > 0) ? date("d-m-Y", $payment_info->fecha_pago) : date("d-m-Y"),
+                        'value' =>(isset($payment_info->date_paid) && $payment_info->date_paid > 0) ? date("d-m-Y", $payment_info->date_paid) : '',
                         'class' => 'form-control',
                         'type' => 'datetime'
                       )
@@ -185,16 +181,19 @@
               <span class="input-group-addon">
                 <span class="glyphicon glyphicon-calendar"></span>
               </span>
+              <script type="text/javascript">
+                $(function () {
+                    $('#fecha_pago').datetimepicker({
+                        format: 'DD-MM-YYYY'
+                    });
+                });
+              </script>
             </div>
           </div>
         </div>
 
         <div class="field_row clearfix">
           <?php echo form_label('Monto a Pagar:', 'teller', array('class' => 'wide')); ?>
-          
-          <?php
-           //    $payable = $CI->loans->_calculate_mortgage($balance_amount, 13, 3, 60);
-          ?>
           <div class='form_field'>
             <?php
               echo form_input(
@@ -215,11 +214,6 @@
 
         <div class="field_row clearfix">
             <?php echo form_label('Multa:', 'multa', array('class' => 'wide')); ?>
-            
-           <?php  
-     //    $payable = $CI->loans->_calculate_mortgage($balance_amount, 13, 3, 60);
-       ?> 
-           
             <div class='form_field'>
                 <?php
                 echo form_input(
@@ -291,6 +285,17 @@
 
 <script type='text/javascript'>
 
+function format_date(date) {
+  var d = date.getDate();
+  var m = date.getMonth() + 1;
+  var y = date.getFullYear();
+  return (d <= 9 ? '0' + d : d) + '-' + (m<=9 ? '0' + m : m) + '-' + y;
+}
+
+function calcular_multa() {
+  var interes =  $("#interes").val();
+  return 5;
+}
   //validation and submit handling
   $(document).ready(function () {
     $("#div-form").height($(window).height() - 250);
@@ -304,34 +309,40 @@
     }
 
     $(document).on("change", "#loan_id", function () {
-      var balance = $('#loan_id option:selected').data('balance');
+      var balance = $('#loan_id option:selected').data('loan_balance')+'';
       $("#balance_amount").val(balance.replace(/[^\d.]/g, ''));
     });
 
     //INTERES_ACTUAL 
     $(document).on("change", "#loan_id", function () {
-            var interes_actual = $('#loan_id option:selected').data('interes_actual');
-            $("#interes_actual").val(interes_actual.replace(/[^\d.]/g, ''));
-        });
+      var interes_actual = $('#loan_id option:selected').data('interes_actual')+'';
+      $("#interes_actual").val(interes_actual.replace(/[^\d.]/g, ''));
+    });
     
     //-----///
     
     
     $(document).on("change", "#loan_id", function () {
-            var cuota = $('#loan_id option:selected').data('cuota');
-            $("#paid_amount").val(cuota.replace(/[^\d.]/g, ''));
-        });
+      var cuota = $('#loan_id option:selected').data('cuota')+'';
+      $("#paid_amount").val(cuota.replace(/[^\d.]/g, ''));
+    });
     
     $(document).on("change", "#loan_id", function () {
-            var multa = $('#loan_id option:selected').data('multa');
-            $("#multa").val(multa.replace(/[^\d.]/g, ''));
-        });
+      var interes = $('#loan_id option:selected').data('interes')+'';
+      $("#interes").val(interes.replace(/[^\d.]/g, ''));
+    });
+
+    $(document).on("change", "#loan_id", function () {
+      var fecha_pago = $('#loan_id option:selected').data('fecha_pago');
+//      $("#fecha_pago").val(format_date(new Date(fecha_pago*1000)));  ///aca
+      $("#fecha_pago").val(fecha_pago);  ///aca
+    });
     
     $(document).on("change", "#loan_id", function () {
-            var fecha_pago = $('#loan_id option:selected').data('fecha_pago');
-            $("#fecha_pago").val(fecha_pago);  ///aca
-        });
-    
+      var multa = calcular_multa();
+      $("#multa").val(multa);
+    });
+
 
       if ($("#loan_payment_id").val() > -1) {
         $("#modified_by").val($("#user_info").val());
@@ -411,21 +422,22 @@
             success: function (data) {
               var options = $("#loan_id");
               options.empty();
+              console.log('data: ',data);
               $.each(data, function () {
-                  options.append($("<option />").val(this.loan_id).attr("data-balance", this.loan_balance).attr("data-cuota", this.cuota).attr("data-interes_actual", this.interes_actual).attr("data-multa", this.multa).attr("data-fecha_pago", this.fecha_pago).text(this.loan_type + " (" + this.loan_amount + ") - " + this.loan_balance));
+                  options.append($("<option />").val(this.loan_id).attr("data-loan_balance", this.loan_balance).attr("data-cuota", this.cuota).attr("data-interes_actual", this.interes_actual).attr("data-interes", this.interes).attr("data-fecha_pago", this.fecha_pago).text(this.loan_type + " (" + this.loan_amount + ") - " + this.loan_balance));
               });
 
-              var balance = $('#loan_id option:selected').data('balance');
+              var balance = $('#loan_id option:selected').data('loan_balance')+'';
               $("#balance_amount").val(balance.replace(/[^\d.]/g, ''));
       
-              var cuota = $('#loan_id option:selected').data('cuota');
+              var cuota = $('#loan_id option:selected').data('cuota')+'';
               $("#paid_amount").val(cuota.replace(/[^\d.]/g, ''));
       
-              var interes_actual = $('#loan_id option:selected').data('interes_actual');
+              var interes_actual = $('#loan_id option:selected').data('interes_actual')+'';
               $("#interes_actual").val(interes_actual.replace(/[^\d.]/g, ''));
       
-              var multa = $('#loan_id option:selected').data('multa');
-              $("#multa").val(multa.replace(/[^\d.]/g, ''));
+              var interes = $('#loan_id option:selected').data('interes')+'';
+              $("#interes").val(interes.replace(/[^\d.]/g, ''));
 
               var fecha_pago = $('#loan_id option:selected').data('fecha_pago');
               $("#fecha_pago").val(fecha_pago);

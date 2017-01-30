@@ -50,6 +50,7 @@ class Payments extends Secure_area implements iData_controller {
         /// VERIFICAR SI TIENE PAGOS ATRASADOS   
       
         $loan_type_info = $this->Loan_type->get_info($loan->loan_type_id);
+        $tmp['interes'] = $loan_type_info->percent_charge1;
 
         switch ($loan_type_info->payment_schedule) {
           case "weekly": // 4 weeks in 1month
@@ -116,8 +117,8 @@ class Payments extends Secure_area implements iData_controller {
         $data['paid'] = to_currency($payment->paid_amount);
 //        $data['multa'] = to_currency($payment->multa);
 //        $data['pago_total'] = to_currency(($payment->multa)+ ($payment->paid_amount));
-        $data['multa'] = to_currency($loan->multa);
-        $data['pago_total'] = to_currency(($loan->multa)+ ($payment->paid_amount));
+        $data['multa'] = to_currency($payment->multa);
+        $data['pago_total'] = to_currency(($payment->multa)+ ($payment->paid_amount));
         $data['trans_date'] = date("d/m/Y", $payment->date_paid);
         $data['teller'] = $person->first_name . " " . $person->last_name;
 
@@ -273,8 +274,34 @@ class Payments extends Secure_area implements iData_controller {
       foreach ($loans as $loan) {
       
         $loan_type_info = $this->Loan_type->get_info($loan->loan_type_id);
-      
+        $factor = 1;
+        $days_to_add = '+1 month';
+
         switch ($loan_type_info->payment_schedule) {
+          case "daily":
+            $days_to_add = '+1 day';
+            break;
+          case "weekly":
+            $days_to_add = '+7 day';
+            break;
+          case "biweekly":
+            $days_to_add = '+14 day';
+            break;
+          default:
+          case "monthly":
+            $days_to_add = '+1 month';
+            break;
+          case "bimonthly":
+            $days_to_add = '+2 month';
+            break;
+          case "quarterly":
+            $days_to_add = '+3 month';
+            break;  
+          case "biannual":
+            $days_to_add = '+6 month';
+            break;   
+        }
+/*        switch ($loan_type_info->payment_schedule) {
           case "weekly": // 4 weeks in 1month
             $factor = 1/4*30;
             break;
@@ -294,16 +321,17 @@ class Payments extends Secure_area implements iData_controller {
             $factor = 6*30;
            break;   
         }
-         
+*/         
         $fecha_cobro = $loan->loan_payment_date;    //FECHA Q SE DEBE COBRAR 
         $ultima_fecha_pago = $loan->loan_pago;
         $interes = $loan_type_info->percent_charge1; 
 
         $interes_actual = 0;
         
-        $dias_transcurridos = intval(abs($fecha_pago - $ultima_fecha_pago)/60/60/24);  //DÍAS ENTRE FECHA DE PAGO ACTUAL VS ULTIMA FECHA DE PAGO
+        //DÍAS ENTRE FECHA DE PAGO ACTUAL VS ULTIMA FECHA DE PAGO
+        $dias_transcurridos = intval(abs($fecha_pago - $ultima_fecha_pago)/60/60/24);
         $diferencia = 1;
-        $loan->multa = to_currency(0);
+        $loan->multa = to_currency(1);
       
         if ($dias_transcurridos >= $factor) {
           $diferencia = intval($dias_transcurridos / $factor);  // ACA NOS DARA LOS PAGOS Q SE PASO;    59/30    31/30   
@@ -317,6 +345,8 @@ class Payments extends Secure_area implements iData_controller {
             $loan->multa = to_currency(($diferencia) * ($loan_type_info->percent_charge2));
             $interes_actual = ($loan->loan_balance)*($interes/100/12/30*($dias_transcurridos));
           }
+
+          $loan->multa = $loan_type_info->percent_charge2;
         }
     /*
       if ($dias_transcurridos > 0)
@@ -327,16 +357,16 @@ class Payments extends Secure_area implements iData_controller {
     //  $diferencia = 4;s
     */
     //MOSTRAR INTERES ACTUAL
-      
         $loan->fecha_pago = date('d-m-Y', $ultima_fecha_pago);
         $loan->loan_amount = to_currency($loan->loan_amount);
         $loan->loan_balance = "Saldo C: " . to_currency($loan->loan_balance);
         $loan->cuota = to_currency(($loan->cuota)*$diferencia);
         $loan->interes_actual = to_currency($interes_actual);
         $loan->dias_transcurridos = $dias_transcurridos;
+        $loan->interes = $loan_type_info->percent_charge1;
+error_log('loan: '.print_r($loan,true));
       
       }
-
       echo json_encode($loans);
       exit;
     }
