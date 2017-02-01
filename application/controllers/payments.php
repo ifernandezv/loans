@@ -37,65 +37,11 @@ class Payments extends Secure_area implements iData_controller {
     }
 
     function view($payment_id = -1) {
+      $data['multa_por_dia'] = $this->Appconfig->get('multa_por_dia');
       $data['payment_info'] = $this->Payment->get_info($payment_id);
-      $res = $this->Payment->get_loans($data['payment_info']->customer_id);
-      $fecha_pago = time();
-      $loans = array();
       $data['date_paid'] = 0;
+      $data['loans'] = $this->_get_loans_aux($data['payment_info']->customer_id);
 
-      foreach ($res as $loan) {
-        $tmp['loan_id'] = $loan->loan_id;
-        $tmp['balance'] = $loan->loan_balance;
-        $tmp['interes_actual'] = $loan->interes_actual;
-        /// VERIFICAR SI TIENE PAGOS ATRASADOS   
-      
-        $loan_type_info = $this->Loan_type->get_info($loan->loan_type_id);
-        $tmp['interes'] = $loan_type_info->percent_charge1;
-
-        switch ($loan_type_info->payment_schedule) {
-          case "weekly": // 4 weeks in 1month
-            $factor = 1/4*30;
-            break;
-          case "biweekly": // 2 weeks in 1month
-            $factor = 1/2*30;
-            break;
-          case "quarterly": // 12 weeks in 3 month
-            $factor = 3*30;
-            break;  
-          default:
-          case "monthly": // 1 month in 1month
-            $factor = 1*30;
-            break;
-          case "bimonthly":
-            $factor = 2*30;
-            break;  
-          case "biannual":
-            $factor = 6*30;
-            break;   
-        }
-
-        $fecha_cobro = $loan->loan_payment_date;    //FECHA Q SE DEBE COBRAR 
-        
-        $dias_transcurridos = intval(($fecha_pago - $fecha_cobro)/60/60/24);
-        $diferencia = 1;
-
-        if ($dias_transcurridos > $factor) {
-          $diferencia = $dias_transcurridos / $factor;  // ACA NOS DARA LOS PAGOS Q SE PASO;    59/30 
-          $diferencia =  intval($diferencia);   //  59/30 = 1.97  = 2;   ///CONSULTAR ACA
-          $data['date_paid'] = $fecha_cobro;  //ACA PONEMOS LA FECHA DE PAGO
-        }
-        
-        $tmp['cuota'] = ($loan->cuota)*$diferencia ;
-        $tmp['text'] = $loan->loan_type . " (" . to_currency($loan->loan_amount) . ' - ' .
-                       date("d/m/Y", $loan->loan_applied_date) .
-                        ") - Saldo A: " . to_currency($loan->loan_balance);
-        $tmp['multa'] = 5;
-        $tmp['fecha_pago'] = date("d-m-Y", $fecha_cobro);
-
-        $loans[] = $tmp;
-      }
-
-      $data['loans'] = $loans;
       $this->load->view("payments/form", $data);
     }
 
@@ -266,7 +212,7 @@ class Payments extends Secure_area implements iData_controller {
         exit;
     }
 
-    function get_loans($customer_id) {
+    private function _get_loans_aux($customer_id) {
       $loans = $this->Payment->get_loans($customer_id);
       $fecha_pago = time();
       $data['date_paid'] = 0;
@@ -274,99 +220,58 @@ class Payments extends Secure_area implements iData_controller {
       foreach ($loans as $loan) {
       
         $loan_type_info = $this->Loan_type->get_info($loan->loan_type_id);
+
+        $loan->numero_cuota = $this->Payment->count_payments($loan->loan_id) + 1;
+        $loan->first_payment = $this->Payment->first_payment($loan->loan_id);
         $factor = 1;
-        $days_to_add = '+1 month';
 
         switch ($loan_type_info->payment_schedule) {
-          case "daily":
-            $days_to_add = '+1 day';
-            break;
-          case "weekly":
-            $days_to_add = '+7 day';
-            break;
-          case "biweekly":
-            $days_to_add = '+14 day';
-            break;
           default:
           case "monthly":
-            $days_to_add = '+1 month';
+            $factor = 1;
             break;
           case "bimonthly":
-            $days_to_add = '+2 month';
+            $factor = 2;
             break;
           case "quarterly":
-            $days_to_add = '+3 month';
+            $factor = 3;
             break;  
           case "biannual":
-            $days_to_add = '+6 month';
+            $factor = 6;
             break;   
         }
-/*        switch ($loan_type_info->payment_schedule) {
-          case "weekly": // 4 weeks in 1month
-            $factor = 1/4*30;
-            break;
-          case "biweekly": // 2 weeks in 1month
-            $factor = 1/2*30;
-            break;
-          case "quarterly": // 12 weeks in 3 month
-            $factor = 3*30;
-            break;  
-          case "monthly": // 1 month in 1month
-            $factor = 1*30;
-            break;
-          case "bimonthly":
-            $factor = 2*30;
-           break;  
-          case "biannual":
-            $factor = 6*30;
-           break;   
+
+        if ($loan->numero_cuota > 1) {
+          $factor *= $loan->numero_cuota;
+          $fecha_pago_teorica = strtotime("+$factor month", $loan->first_payment);
         }
-*/         
+        else {
+          $fecha_pago_teorica = strtotime('now');
+        }
+
         $fecha_cobro = $loan->loan_payment_date;    //FECHA Q SE DEBE COBRAR 
         $ultima_fecha_pago = $loan->loan_pago;
         $interes = $loan_type_info->percent_charge1; 
 
         $interes_actual = 0;
         
-        //DÍAS ENTRE FECHA DE PAGO ACTUAL VS ULTIMA FECHA DE PAGO
-        $dias_transcurridos = intval(abs($fecha_pago - $ultima_fecha_pago)/60/60/24);
-        $diferencia = 1;
-        $loan->multa = to_currency(1);
-      
-        if ($dias_transcurridos >= $factor) {
-          $diferencia = intval($dias_transcurridos / $factor);  // ACA NOS DARA LOS PAGOS Q SE PASO;    59/30    31/30   
-          
-          if($diferencia > 1) {
-            $diferencia = $diferencia + 1;
-            $loan->multa = to_currency(($dias_transcurridos) * ($loan_type_info->percent_charge2));
-            $interes_actual = ($loan->loan_balance)*($interes/100/12/30*($dias_transcurridos + $factor));
-          }
-          else {
-            $loan->multa = to_currency(($diferencia) * ($loan_type_info->percent_charge2));
-            $interes_actual = ($loan->loan_balance)*($interes/100/12/30*($dias_transcurridos));
-          }
-
-          $loan->multa = $loan_type_info->percent_charge2;
-        }
-    /*
-      if ($dias_transcurridos > 0)
-      {
-        $loan->multa = to_currency(($dias_transcurridos) * ($loan_type_info->percent_charge2));
-      
-      }
-    //  $diferencia = 4;s
-    */
-    //MOSTRAR INTERES ACTUAL
+        $loan->multa = $loan_type_info->percent_charge2;
+        $loan->fecha_pago_teorica = $fecha_pago_teorica;
         $loan->fecha_pago = date('d-m-Y', $ultima_fecha_pago);
         $loan->loan_amount = to_currency($loan->loan_amount);
-        $loan->loan_balance = "Saldo C: " . to_currency($loan->loan_balance);
-        $loan->cuota = to_currency(($loan->cuota)*$diferencia);
+        $loan->loan_balance = to_currency($loan->loan_balance);
         $loan->interes_actual = to_currency($interes_actual);
-        $loan->dias_transcurridos = $dias_transcurridos;
         $loan->interes = $loan_type_info->percent_charge1;
-error_log('loan: '.print_r($loan,true));
-      
+        $loan->text = $loan->loan_type . " (" . $loan->loan_amount . ' - ' .
+                       date("d/m/Y", $loan->loan_applied_date) .
+                        ") - Saldo: " . $loan->loan_balance;
+
       }
+      return $loans;
+    }
+
+    function get_loans($customer_id) {
+      $loans = $this->_get_loans_aux($customer_id);
       echo json_encode($loans);
       exit;
     }
