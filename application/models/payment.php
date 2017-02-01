@@ -73,6 +73,27 @@ class Payment extends CI_Model {
     return $this->db->count_all_results();
   }
 
+  function count_payments($loan_id) {
+    $this->db->where('loan_id', $loan_id);
+    $this->db->where('delete_flag', 0);
+    $this->db->from('loan_payments');
+    return $this->db->count_all_results();
+  }
+
+  function first_payment($loan_id) {
+    $this->db->where('loan_id', $loan_id);
+    $this->db->where('delete_flag', 0);
+    $this->db->from('loan_payments');
+    $this->db->order_by('date_paid','asc');
+    $this->db->limit(1);
+    $query = $this->db->get();
+
+    if ($query->num_rows() == 1) {
+      return $query->row()->date_paid;
+    }
+    return '';
+  }
+
   /*
     Gets information about a particular loan
    */
