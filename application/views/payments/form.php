@@ -177,13 +177,13 @@
                 <span class="input-group-addon">
                   <span class="glyphicon glyphicon-calendar"></span>
                 </span>
-                <!-- script type="text/javascript">
+                <script type="text/javascript">
                   $(function () {
                       $('#paiddate').datetimepicker({
-                          format: 'DD-MM-YYYY'
+                        format: 'DD-MM-YYYY'
                       });
                   });
-                </script -->
+                </script>
               </div>
             </div>
         </div>
@@ -314,7 +314,6 @@ function ajustar_campos() {
 
   if (fecha_pago > fecha_pago_teorica) {
     multa = multa_por_dia * (fecha_pago - fecha_pago_teorica) / (24 * 3600 * 1000);
-    console.log('siii: ', multa);
   }
   $("#multa").val(multa);
 
@@ -329,7 +328,8 @@ function ajustar_campos() {
 
   var interes = balance*(((rate/100)/365)*dias);
   if ( interes > cuota ) {
-    $("#paid_amount").val(interes);
+    cuota = interes;
+    $("#paid_amount").val(interes.toFixed(2));
   }
   var capital = cuota - interes;
   var capital_interes = capital.toFixed(2) + ' / ' + interes.toFixed(2);
@@ -391,18 +391,14 @@ function ajustar_campos() {
     
     $(document).on("change", "#loan_id", function () {
       var fecha_pago_teorica = $('#loan_id option:selected').data('fecha_pago_teorica');
-      $('#fecha_ultimo_pago').val(fecha_pago_teorica);
+      $('#fecha_pago_teorica').val(fecha_pago_teorica);
     });
     
     $(document).on("change", "#loan_id", function () {
       ajustar_campos();
     });
 
-    $(document).on("change", "#date_paid", function () {
-      ajustar_campos();
-    });
-
-    $(document).on("change", "#paiddate", function () {
+    $(document).on("dp.change", "#paiddate", function () {
       ajustar_campos();
     });
 
