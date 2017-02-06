@@ -45,52 +45,53 @@ class Payments extends Secure_area implements iData_controller {
       $this->load->view("payments/form", $data);
     }
 
-    function printIt($payment_id = -1)
-    {
-        $payment = $this->Payment->get_info($payment_id);
-        $loan = $this->Loan->get_info($payment->loan_id);
-        $loan_type = $this->Loan_type->get_info($loan->loan_type_id);
-        $person = $this->Person->get_info($payment->teller_id);
-        $customer = $this->Person->get_info($payment->customer_id);
+    function printIt($payment_id = -1) {
+      $payment = $this->Payment->get_info($payment_id);
+      $loan = $this->Loan->get_info($payment->loan_id);
+      $loan_type = $this->Loan_type->get_info($loan->loan_type_id);
+      $person = $this->Person->get_info($payment->teller_id);
+      $customer = $this->Person->get_info($payment->customer_id);
 
+      $data['numero_cuota'] = $this->Payment->count_payments($loan->loan_id) + 1;
 
-        // pdf viewer 
-        $data['count'] = $payment->loan_payment_id;
-        $data['client'] = ucwords($customer->first_name." ".$customer->last_name);
-        $data['account'] = $loan->account;
-        $data['loan'] = to_currency($loan->loan_amount);
-        $data['balance'] = to_currency($loan->loan_balance);
-        $data['paid'] = to_currency($payment->paid_amount);
-//        $data['multa'] = to_currency($payment->multa);
-//        $data['pago_total'] = to_currency(($payment->multa)+ ($payment->paid_amount));
-        $data['multa'] = to_currency($payment->multa);
-        $data['pago_total'] = to_currency(($payment->multa)+ ($payment->paid_amount));
-        $data['trans_date'] = date("d/m/Y", $payment->date_paid);
-        $data['teller'] = $person->first_name . " " . $person->last_name;
+      // pdf viewer
+      $data['count'] = $payment->loan_payment_id;
+      $data['client'] = ucwords($customer->first_name." ".$customer->last_name);
+      $data['account'] = $loan->account;
+      $data['loan_id'] = $loan->loan_id;
+      $data['loan'] = to_currency($loan->loan_amount);
+      $data['balance'] = to_currency($loan->loan_balance);
+      $data['paid'] = to_currency($payment->paid_amount);
+      $data['multa'] = to_currency($payment->multa);
+      $data['pago_total'] = to_currency(($payment->multa)+ ($payment->paid_amount));
+      $data['trans_date'] = date("d/m/Y", $payment->date_paid);
+      $data['teller'] = $person->first_name . " " . $person->last_name;
 
-        $filename = "payments_".date("ymdhis");
-        // As PDF creation takes a bit of memory, we're saving the created file in /downloads/reports/
-        $pdfFilePath = FCPATH . "/downloads/reports/$filename.pdf";
+      $this->load->library('En_Letras');
+      $l = new En_Letras();
+      $data['literal'] = $l->ValorEnLetras($payment->paid_amount+$payment->multa,'');
 
-        ini_set('memory_limit', '32M'); // boost the memory limit if it's low <img src="https://davidsimpson.me/wp-includes/images/smilies/icon_wink.gif" alt=";)" class="wp-smiley">
-        $html = $this->load->view('payments/pdf_report', $data, true); // render the view into HTML
+      $filename = "payments_".date("ymdhis");
+      // As PDF creation takes a bit of memory, we're saving the created file in /downloads/reports/
+      $pdfFilePath = FCPATH . "/downloads/reports/$filename.pdf";
 
-        $this->load->library('pdf');
-    
-        $params = '"en-GB-x","Letter","","",10,10,10,10,6,3';
-    
-        $pdf = $this->pdf->load($params);
-    
-        $pdf->SetFooter($_SERVER['HTTP_HOST'] . '|{PAGENO}|' . date(DATE_RFC822)); // Add a footer for good measure <img src="https://davidsimpson.me/wp-includes/images/smilies/icon_wink.gif" alt=";)" class="wp-smiley">
-        $pdf->WriteHTML($html); // write the HTML into the PDF
-        $pdf->Output($pdfFilePath, 'F'); // save to file because we can
-        // end of pdf viewer
+      ini_set('memory_limit', '32M'); // boost the memory limit if it's low <img src="https://davidsimpson.me/wp-includes/images/smilies/icon_wink.gif" alt=";)" class="wp-smiley">
+      $html = $this->load->view('payments/pdf_report', $data, true); // render the view into HTML
 
+      $this->load->library('pdf');
 
-        $data['pdf_file'] = "/loans/downloads/reports/$filename.pdf";
+      $params = '"en-GB-x","Letter","","",10,10,10,10,6,3';
 
+      $pdf = $this->pdf->load($params);
 
-        $this->load->view("payments/print", $data);
+      $pdf->SetFooter($_SERVER['HTTP_HOST'] . '|{PAGENO}|' . date(DATE_RFC822)); // Add a footer for good measure <img src="https://davidsimpson.me/wp-includes/images/smilies/icon_wink.gif" alt=";)" class="wp-smiley">
+      $pdf->WriteHTML($html); // write the HTML into the PDF
+      $pdf->Output($pdfFilePath, 'F'); // save to file because we can
+      // end of pdf viewer
+
+      $data['pdf_file'] = "/loans/downloads/reports/$filename.pdf";
+
+      $this->load->view("payments/print", $data);
     }
 
     function save($payment_id = -1) {
