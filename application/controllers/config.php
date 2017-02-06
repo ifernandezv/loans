@@ -25,6 +25,7 @@ class Config extends Secure_area {
             'website' => $this->input->post('website'),
             'currency_symbol' => $this->input->post('currency_symbol'),
             'currency_side' => $this->input->post('currency_side'),
+            'multa_por_dia' => $this->input->post('multa_por_dia'),
             'language' => $this->input->post('language'),
             'timezone' => $this->input->post('timezone')
         );

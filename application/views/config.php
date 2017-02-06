@@ -106,6 +106,18 @@
         </div>
 
         <div class="field_row clearfix">  
+            <?php echo form_label('Multa por día:', 'multa_por_dia', array('class' => 'wide')); ?>
+            <div class='form_field'>
+                <?php
+                echo form_input(array(
+                    'name' => 'multa_por_dia',
+                    'id' => 'multa_por_dia',
+                    'value' => $this->config->item('multa_por_dia')));
+                ?>
+            </div>
+        </div>
+
+        <div class="field_row clearfix">  
             <?php echo form_label($this->lang->line('common_email') . ':', 'email', array('class' => 'wide')); ?>
             <div class='form_field'>
                 <?php
