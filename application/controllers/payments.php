@@ -224,6 +224,7 @@ class Payments extends Secure_area implements iData_controller {
         $loan->numero_cuota = $this->Payment->count_payments($loan->loan_id) + 1;
         $loan->first_payment = $this->Payment->first_payment($loan->loan_id);
         $factor = 1;
+        $fecha_pago_teorica = '';
 
         switch ($loan_type_info->payment_schedule) {
           default:
@@ -242,7 +243,7 @@ class Payments extends Secure_area implements iData_controller {
         }
 
         if ($loan->numero_cuota > 1) {
-          $factor *= $loan->numero_cuota;
+          $factor *= ($loan->numero_cuota - 1);
           $fecha_pago_teorica = strtotime("+$factor month", $loan->first_payment);
         }
         else {
@@ -265,7 +266,6 @@ class Payments extends Secure_area implements iData_controller {
         $loan->text = $loan->loan_type . " (" . $loan->loan_amount . ' - ' .
                        date("d/m/Y", $loan->loan_applied_date) .
                         ") - Saldo: " . $loan->loan_balance;
-
       }
       return $loans;
     }
