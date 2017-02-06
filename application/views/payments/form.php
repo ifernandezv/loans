@@ -1,6 +1,7 @@
 <?php echo form_open('payments/save/' . $payment_info->loan_payment_id, array('id' => 'payment_form')); ?>
 
 <input type="hidden" id="loan_payment_id" name="loan_payment_id" value="<?= $payment_info->loan_payment_id; ?>" />
+<input type="hidden" id="multa_por_dia" name="multa_por_dia" value="<?= $multa_por_dia; ?>" />
 
 <div class="modal-header">
   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -98,37 +99,58 @@
         <select id="loan_id" name="loan_id" class="form-control">
           <?php 
             $balance_amount = '';
-            $loancuota = '';
-            $interes = '';
+            $loan_cuota = '';
+            $numero_cuota = '';
+            $loan_interes = '';
+            $fecha_ultimo_pago = '';
+            $fecha_pago_teorica = '';
 
             foreach ($loans as $loan) {
               $selected = '';
-              if ($loan['loan_id'] === $payment_info->loan_id) {
+              if ($loan->loan_id === $payment_info->loan_id) {
                 $selected = 'selected="selected"';
-                $balance_amount = $loan['balance'];
-                $loancuota = $loan['cuota'];
-                $interes = $loan['interes'];
+                $balance_amount = $loan->loan_balance;
+                $loan_cuota = $loan->cuota;
+                $numero_cuota = $loan->numero_cuota;
+                $loan_interes = $loan->interes;
+                $fecha_ultimo_pago = $loan->loan_pago;
+                $fecha_pago_teorica = $loan->fecha_pago_teorica;
               }
             ?>
-              <option value="<?= $loan['loan_id'] ?>" <?= $selected; ?>  data-loan_balance="<?= $loan['balance']; ?>"  data-cuota="<?= $loan['cuota']; ?>" data-interes="<?= $loan['interes']; ?>" data-fecha_pago="<?= $loan['fecha_pago']; ?>" data-interes_actual="<?= $loan['interes_actual']; ?>"><?= $loan['text']; ?> </option>                 
+              <option value="<?= $loan->loan_id; ?>" <?= $selected; ?>  data-loan_balance="<?= $loan->loan_balance; ?>"  data-cuota="<?= $loan->cuota; ?>" data-numero_cuota="<?= $loan->numero_cuota; ?>" data-interes="<?= $loan->interes; ?>" data-fecha_ultimo_pago="<?= $loan->loan_pago; ?>" data-fecha_pago_teorica="<?= $loan->fecha_pago_teorica; ?>" data-interes_actual="<?= $loan->interes_actual; ?>"><?= $loan->text; ?> </option>
           <?php } ?>
         </select>
         <input type="hidden" name="balance_amount" id="balance_amount" value="<?= $balance_amount; ?>" />
-        <input type="hidden" name="cuota" id="cuota" value="<?= $loancuota; ?>" />
-        <input type="hidden" name="interes" id="interes" value="<?= $interes; ?>" />
+        <input type="hidden" name="cuota" id="cuota" value="<?= $loan_cuota; ?>" />
+        <input type="hidden" name="numero_cuota" id="numero_cuota" value="<?= $numero_cuota; ?>" />
+        <input type="hidden" name="interes" id="interes" value="<?= $loan_interes; ?>" />
+        <input type="hidden" name="fecha_ultimo_pago" id="fecha_ultimo_pago" value="<?= $fecha_ultimo_pago; ?>" />
+        <input type="hidden" name="fecha_pago_teorica" id="fecha_pago_teorica" value="<?= $fecha_pago_teorica; ?>" />
             
             </div>
         </div>
-        
+
         <div class="field_row clearfix">
-          <?php 
-            echo form_label('Interés Actual a la Fecha:', 
-                            'interes_actual', 
-                            array('class' => 'wide required')
+          <?php
+            echo form_label('Fecha de Último Pago:',
+                            'ultimo_pago',
+                            array('class' => 'wide')
                   );
           ?>
           <div class='form_field'>
-            <input name="interes_actual" readonly id="interes_actual" value="0" />
+            <span name="ultimo_pago" id="ultimo_pago"></span>
+          </div>
+        </div>
+
+        <div class="field_row clearfix">
+          <?php
+            echo form_label('Número de cuota:',
+                            'n_cuota',
+                            array('class' => 'wide')
+                  );
+          ?>
+          <div class='form_field'>
+            <span name="n_cuota" id="n_cuota"></span>
           </div>
         </div>
 
@@ -140,7 +162,7 @@
                   );
           ?>
           <div class='form_field'>
-            <div class='input-group date' id='applydate' style="width: 30%">
+            <div class='input-group date' id='paiddate' style="width: 30%">
               <?php
                 echo form_input(
                         array(
@@ -155,41 +177,15 @@
                 <span class="input-group-addon">
                   <span class="glyphicon glyphicon-calendar"></span>
                 </span>
+                <!-- script type="text/javascript">
+                  $(function () {
+                      $('#paiddate').datetimepicker({
+                          format: 'DD-MM-YYYY'
+                      });
+                  });
+                </script -->
               </div>
             </div>
-        </div>
-        <div class="field_row clearfix">
-          <?php
-            echo form_label('Fecha de Último Pago:',
-                            'fecha_pago',
-                            array('class' => 'wide required')
-                  );
-          ?>
-          <div class='form_field'>
-            <div class='input-group date' id='fecha_ultimo_pago' style="width: 30%">
-              <?php
-                echo form_input(
-                      array(
-                        'name' => 'fecha_pago',
-                        'id' => 'fecha_pago',
-                        'value' =>(isset($payment_info->date_paid) && $payment_info->date_paid > 0) ? date("d-m-Y", $payment_info->date_paid) : '',
-                        'class' => 'form-control',
-                        'type' => 'datetime'
-                      )
-                    );
-              ?>
-              <span class="input-group-addon">
-                <span class="glyphicon glyphicon-calendar"></span>
-              </span>
-              <script type="text/javascript">
-                $(function () {
-                    $('#fecha_pago').datetimepicker({
-                        format: 'DD-MM-YYYY'
-                    });
-                });
-              </script>
-            </div>
-          </div>
         </div>
 
         <div class="field_row clearfix">
@@ -209,6 +205,18 @@
                     );
             ?>
             <input type="hidden" name="original_pay_amount" value="<?= $payment_info->paid_amount; ?>" />
+          </div>
+        </div>
+
+        <div class="field_row clearfix">
+          <?php
+            echo form_label('Capital / Interés:',
+                            'capital_interes',
+                            array('class' => 'wide')
+                  );
+          ?>
+          <div class='form_field'>
+            <span name="capital_interes" id="capital_interes"></span>
           </div>
         </div>
 
@@ -292,9 +300,41 @@ function format_date(date) {
   return (d <= 9 ? '0' + d : d) + '-' + (m<=9 ? '0' + m : m) + '-' + y;
 }
 
-function calcular_multa() {
-  var interes =  $("#interes").val();
-  return 5;
+function ajustar_campos() {
+  var multa = 0;
+  var multa_por_dia =  $('#multa_por_dia').val();
+  var rate =  $('#interes').val();
+  var balance = $('#balance_amount').val();
+  var cuota = $('#paid_amount').val();
+  var ultimo_pago = new Date(parseInt($('#fecha_ultimo_pago').val())*1000);
+  var fecha_pago_teorica = new Date(parseInt($('#fecha_pago_teorica').val())*1000);
+
+  var fp_arr = ($('#date_paid').val()).split('-');
+  var fecha_pago = new Date(fp_arr[2],fp_arr[1]-1,fp_arr[0]);
+
+  if (fecha_pago > fecha_pago_teorica) {
+    multa = multa_por_dia * (fecha_pago - fecha_pago_teorica) / (24 * 3600 * 1000);
+    console.log('siii: ', multa);
+  }
+  $("#multa").val(multa);
+
+  var dias = (fecha_pago - ultimo_pago) / (24 * 3600 * 1000);
+
+  console.log('fecha_pago: ',fecha_pago);
+  console.log('fecha_pago_teorica: ',fecha_pago_teorica);
+  console.log('multa: ', multa);
+
+  $("#ultimo_pago").html(format_date(ultimo_pago));
+  $("#n_cuota").html($('#numero_cuota').val());
+
+  var interes = balance*(((rate/100)/365)*dias);
+  if ( interes > cuota ) {
+    $("#paid_amount").val(interes);
+  }
+  var capital = cuota - interes;
+  var capital_interes = capital.toFixed(2) + ' / ' + interes.toFixed(2);
+  $("#capital_interes").html(capital_interes);
+
 }
   //validation and submit handling
   $(document).ready(function () {
@@ -333,16 +373,38 @@ function calcular_multa() {
     });
 
     $(document).on("change", "#loan_id", function () {
+      var numero_cuota = $('#loan_id option:selected').data('numero_cuota')+'';
+      $("#numero_cuota").val(numero_cuota);
+      $("#n_cuota").html(numero_cuota);
+    });
+
+    $(document).on("change", "#loan_id", function () {
       var fecha_pago = $('#loan_id option:selected').data('fecha_pago');
-//      $("#fecha_pago").val(format_date(new Date(fecha_pago*1000)));  ///aca
-      $("#fecha_pago").val(fecha_pago);  ///aca
+      $("#fecha_pago").val(fecha_pago);
     });
     
     $(document).on("change", "#loan_id", function () {
-      var multa = calcular_multa();
-      $("#multa").val(multa);
+      var fecha_ultimo_pago = $('#loan_id option:selected').data('fecha_ultimo_pago');
+      $("#ultimo_pago").html(format_date(new Date(parseInt(fecha_ultimo_pago)*1000)));
+      $('#fecha_ultimo_pago').val(fecha_ultimo_pago);
+    });
+    
+    $(document).on("change", "#loan_id", function () {
+      var fecha_pago_teorica = $('#loan_id option:selected').data('fecha_pago_teorica');
+      $('#fecha_ultimo_pago').val(fecha_pago_teorica);
+    });
+    
+    $(document).on("change", "#loan_id", function () {
+      ajustar_campos();
     });
 
+    $(document).on("change", "#date_paid", function () {
+      ajustar_campos();
+    });
+
+    $(document).on("change", "#paiddate", function () {
+      ajustar_campos();
+    });
 
       if ($("#loan_payment_id").val() > -1) {
         $("#modified_by").val($("#user_info").val());
@@ -424,23 +486,39 @@ function calcular_multa() {
               options.empty();
               console.log('data: ',data);
               $.each(data, function () {
-                  options.append($("<option />").val(this.loan_id).attr("data-loan_balance", this.loan_balance).attr("data-cuota", this.cuota).attr("data-interes_actual", this.interes_actual).attr("data-interes", this.interes).attr("data-fecha_pago", this.fecha_pago).text(this.loan_type + " (" + this.loan_amount + ") - " + this.loan_balance));
+                  options.append($("<option />").val(this.loan_id).attr("data-loan_balance", this.loan_balance).attr("data-cuota", this.cuota).attr("data-numero_cuota", this.numero_cuota).attr("data-interes_actual", this.interes_actual).attr("data-interes", this.interes).attr("data-fecha_pago", this.fecha_pago).attr("data-fecha_pago_teorica", this.fecha_pago_teorica).attr("data-fecha_ultimo_pago", this.loan_pago).text(this.loan_type + " (" + this.loan_amount + ") - " + this.loan_balance));
               });
 
               var balance = $('#loan_id option:selected').data('loan_balance')+'';
               $("#balance_amount").val(balance.replace(/[^\d.]/g, ''));
-      
+
               var cuota = $('#loan_id option:selected').data('cuota')+'';
               $("#paid_amount").val(cuota.replace(/[^\d.]/g, ''));
-      
+
+              var numero_cuota = $('#loan_id option:selected').data('numero_cuota')+'';
+              $("#numero_cuota").val(numero_cuota);
+              $("#n_cuota").html(numero_cuota);
+
               var interes_actual = $('#loan_id option:selected').data('interes_actual')+'';
               $("#interes_actual").val(interes_actual.replace(/[^\d.]/g, ''));
-      
+
               var interes = $('#loan_id option:selected').data('interes')+'';
               $("#interes").val(interes.replace(/[^\d.]/g, ''));
 
+              var multa = $('#loan_id option:selected').data('multa')+'';
+              $("#multa").val(interes.replace(/[^\d.]/g, ''));
+
               var fecha_pago = $('#loan_id option:selected').data('fecha_pago');
               $("#fecha_pago").val(fecha_pago);
+
+              var fecha_ultimo_pago = $('#loan_id option:selected').data('fecha_ultimo_pago');
+              $("#fecha_ultimo_pago").val(fecha_ultimo_pago);
+
+              var fecha_pago_teorica = $('#loan_id option:selected').data('fecha_pago_teorica');
+              $("#fecha_pago_teorica").val(fecha_pago_teorica);
+
+              ajustar_campos();
+
             },
             error: function () {
                 ;
