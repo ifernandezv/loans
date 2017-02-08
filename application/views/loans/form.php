@@ -767,38 +767,6 @@ echo form_close();
       });
     });
 
-    $("#btn-add-row").click(function () {
-      $(".select_all_").prop("checked", false);
-
-      var rowCount = $('#tbl-misc-fees tr').length;
-      if (rowCount > 1) {
-        $("#tbl-misc-fees tbody").append("<tr>" + $('#tbl-income-sources tr:last').html() + "</tr>");
-      }
-      else {
-        $("#tbl-misc-fees tbody").append('<tr><td><input type="checkbox" class="select_" /></td><td><input type="text" class="form-control" name="sources[]" /></td><td><input type="number" class="form-control" name="values[]" /></td></tr>');
-      }
-    });
-
-    $("#btn-del-row").click(function () {
-      $('.select_').each(function () {
-        if ($(this).is(":checked")) {
-          $(this).parent().parent().remove();
-        }
-      });
-    });
-
-    $("#btn-add-row").click(function () {
-      $(".select_all_").prop("checked", false);
-
-      var rowCount = $('#tbl-income-sources tr').length;
-      if (rowCount > 1) {
-        $("#tbl-income-sources tbody").append("<tr>" + $('#tbl-income-sources tr:last').html() + "</tr>");
-      }
-      else {
-        $("#tbl-income-sources tbody").append("<tr><td><input type='checkbox' class='select_' /></td><td><input type='text' class='form-control' name='sources[]' /></td><td><input type='number' class='form-control' name='values[]' /></td></tr>");
-      }
-    });
-
     function calculate_cuota() {
       var id = $("#loan_type_id").val();
       var meses  = $("#term_"+id).val();
@@ -963,6 +931,26 @@ echo form_close();
         amount: "<?php echo $this->lang->line('loans_amount_required'); ?>",
         "inp-customer": "<?php echo $this->lang->line('loans_customer_required'); ?>"
       }
+    });
+
+    $("#btn-add-row").click(function () {
+      $(".select_all_").prop("checked", false);
+
+      var rowCount = $('#tbl-misc-fees tr').length;
+      if (rowCount > 1) {
+        $("#tbl-misc-fees tbody").append("<tr>" + $('#tbl-income-sources tr:last').html() + "</tr>");
+      }
+      else {
+        $("#tbl-misc-fees tbody").append('<tr><td><input type="checkbox" class="select_" /></td><td><input type="text" class="form-control" name="sources[]" /></td><td><input type="number" class="form-control" name="values[]" /></td></tr>');
+      }
+    });
+
+    $("#btn-del-row").click(function () {
+      $('.select_').each(function () {
+        if ($(this).is(":checked")) {
+          $(this).parent().parent().remove();
+        }
+      });
     });
 
     $("#btn-save").click(function () {
