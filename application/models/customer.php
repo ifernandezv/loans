@@ -233,16 +233,18 @@ class Customer extends Person {
     function get_search_suggestions($search, $limit = 25)
     {
         $suggestions = array();
+        $escaped_search = $this->db->escape_like_str($search);
 
         $this->db->from('pdv.customers as customers');
         $this->db->join('pdv.people as people', 'customers.person_id=people.person_id');
-        $this->db->where("(first_name LIKE '%" . $this->db->escape_like_str($search) . "%' or 
-    last_name LIKE '%" . $this->db->escape_like_str($search) . "%' or 
-    CONCAT(`first_name`,' ',`last_name`) LIKE '%" . $this->db->escape_like_str($search) . "%') and deleted=0");
+        $this->db->where("(first_name LIKE '%" . $escaped_search . "%'
+        OR last_name LIKE '%" . $escaped_search . "%'
+        OR CONCAT(`first_name`,' ',`last_name`) LIKE '%" . $escaped_search . "%')
+        AND deleted = 0
+        ");
         $this->db->order_by("last_name", "asc");
         $by_name = $this->db->get();
-        foreach ($by_name->result() as $row)
-        {
+        foreach ($by_name->result() as $row) {
             $suggestions[] = $row->first_name . ' ' . $row->last_name;
         }
 
