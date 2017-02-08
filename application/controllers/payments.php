@@ -52,7 +52,7 @@ class Payments extends Secure_area implements iData_controller {
       $person = $this->Person->get_info($payment->teller_id);
       $customer = $this->Person->get_info($payment->customer_id);
 
-      $data['numero_cuota'] = $this->Payment->count_payments($loan->loan_id) + 1;
+      $data['numero_cuota'] = $this->Payment->count_payments($loan->loan_id);
 
       // pdf viewer
       $data['count'] = $payment->loan_payment_id;
