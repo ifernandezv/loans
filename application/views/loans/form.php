@@ -799,14 +799,6 @@ echo form_close();
       }
     });
 
-    $("#btn-del-row").click(function () {
-      $('.select_').each(function () {
-        if ($(this).is(":checked")) {
-          $(this).parent().parent().remove();
-        }
-      });
-    });
-
     function calculate_cuota() {
       var id = $("#loan_type_id").val();
       var meses  = $("#term_"+id).val();
