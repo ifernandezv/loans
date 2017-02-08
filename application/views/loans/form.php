@@ -148,7 +148,7 @@
           </div>
         </div>
 
-        <div class="field_row clearfix">
+        <div class="field_row clearfix" style="display:none">
           <?php echo form_label($this->lang->line('loans_account') . ':', 'account', array('class' => 'wide required')); ?>
           <div class='form_field'>
             <?php
@@ -175,30 +175,6 @@
           <div class='form_field'>
             <a href="" target="_blank" id="pdv-link"> </a>
             <input type="hidden" id="pdv_id" name="pdv_id" value="<?= $loan_info->pdv_id; ?>" />
-          </div>
-        </div>
-
-        <div class="field_row clearfix">
-          <?php 
-            echo form_label(
-              $this->lang->line('loans_description') . ':', 
-              'description', 
-              array('class' => 'wide')
-            );
-          ?>
-          <div class='form_field'>
-            <?php
-              echo form_textarea(
-                array(
-                  'name' => 'description',
-                  'id' => 'description',
-                  'value' => $loan_info->description,
-                  'rows' => '5',
-                  'cols' => '17',
-                  'class' => 'form-control'
-                )
-              );
-            ?>
           </div>
         </div>
 
@@ -258,8 +234,7 @@
 
         <div class="field_row clearfix">
           <?php 
-            echo form_label(
-              $this->lang->line('loans_apply_date') . ':',
+            echo form_label('Fecha de adjudicación:',
               'apply_date',
               array('class' => 'wide required')
             );
@@ -296,8 +271,7 @@
 
         <div class="field_row clearfix">
           <?php 
-            echo form_label(
-              $this->lang->line('loans_payment_date') . ':',
+            echo form_label('Fecha del primer pago:',
               'payment_date',
               array('class' => 'wide required')
             );
@@ -343,9 +317,6 @@
                  ucwords($user_info->first_name . ' ' . $user_info->last_name);
               }
             ?>
-            <!--
-            <?php echo isset($loan_info->agent_name) ? ucwords($loan_info->agent_name) : ucwords($user_info->first_name . " " . $user_info->last_name); ?>
-            -->
             <?php
                 echo form_input(
                   array(
@@ -367,6 +338,30 @@
           <div class='form_field'>
             <?= $loan_status; ?>
             <input type="hidden" id="status" name="status" value="<?= $loan_info->loan_status; ?>" />
+          </div>
+        </div>
+
+        <div class="field_row clearfix">
+          <?php 
+            echo form_label(
+              $this->lang->line('loans_description') . ':', 
+              'description', 
+              array('class' => 'wide')
+            );
+          ?>
+          <div class='form_field'>
+            <?php
+              echo form_textarea(
+                array(
+                  'name' => 'description',
+                  'id' => 'description',
+                  'value' => $loan_info->description,
+                  'rows' => '5',
+                  'cols' => '17',
+                  'class' => 'form-control'
+                )
+              );
+            ?>
           </div>
         </div>
 
@@ -769,10 +764,14 @@ echo form_close();
 
     function calculate_cuota() {
       var id = $("#loan_type_id").val();
-      var meses  = $("#term_"+id).val();
-      var tasa = $("#tasa_"+id).val();      
-      var frecuencia = $("#schedule_"+id).val();
-      var monto = $("#amount").val();
+      var meses  = parseInt($("#term_"+id).val());
+      var tasa = parseInt($("#tasa_"+id).val());
+      var frecuencia = parseInt($("#schedule_"+id).val());
+      var monto = parseInt($("#amount").val());
+
+      if (!id || !monto) {
+        return '';
+      }
 
       var ad_arr = ($('#apply_date').val()).split('-');
       var pd_arr = ($('#payment_date').val()).split('-');
@@ -790,7 +789,7 @@ echo form_close();
       var dias_periodo = (fecha_periodo - ad) / (24 * 3600 * 1000);
 
       var numpagos = 0;
-      var cuota =0;
+      var cuota = 0;
 
       var tasa_diaria = (tasa/100)/365;
       tasa = tasa/100/12*frecuencia;
@@ -816,12 +815,12 @@ echo form_close();
 
     }
 
-    $("#apply_date").change(function () {
+    $(document).on("dp.change", "#applydate", function () {
       var cuota = calculate_cuota();
       $("#cuota").val(cuota);
     });
 
-    $("#payment_date").change(function () {
+    $(document).on("dp.change", "#paymentdate", function () {
       var cuota = calculate_cuota();
       $("#cuota").val(cuota);
     });
