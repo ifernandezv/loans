@@ -40,7 +40,8 @@ class Payments extends Secure_area implements iData_controller {
       $data['multa_por_dia'] = $this->Appconfig->get('multa_por_dia');
       $data['payment_info'] = $this->Payment->get_info($payment_id);
       $data['date_paid'] = 0;
-      $data['loans'] = $this->_get_loans_aux($data['payment_info']->customer_id);
+      $ajuste_numero_cuota = $payment_id === -1? 1 : 0;
+      $data['loans'] = $this->_get_loans_aux($data['payment_info']->customer_id,$ajuste_numero_cuota);
 
       $this->load->view("payments/form", $data);
     }
@@ -60,7 +61,7 @@ class Payments extends Secure_area implements iData_controller {
       $data['account'] = $loan->account;
       $data['loan_id'] = $loan->loan_id;
       $data['loan'] = to_currency($loan->loan_amount);
-      $data['balance'] = to_currency($loan->loan_balance);
+      $data['balance'] = to_currency($payment->balance_amount);
       $data['paid'] = to_currency($payment->paid_amount);
       $data['multa'] = to_currency($payment->multa);
       $data['pago_total'] = to_currency(($payment->multa)+ ($payment->paid_amount));
@@ -196,6 +197,7 @@ class Payments extends Secure_area implements iData_controller {
                 $payment->loan_type . " (" . to_currency($payment->loan_amount) . ")",
                 to_currency($payment->balance_amount),
                 to_currency($payment->paid_amount),
+                to_currency($payment->multa),
                 date("d/m/Y", $payment->date_paid),
                 ucwords($payment->teller_name),
                 anchor('payments/view/' . $payment->loan_payment_id, $this->lang->line('common_view'), array('class' => 'modal_link btn btn-success', 'data-toggle' => 'modal', 'data-target' => '#payment_modal', "title" => $this->lang->line('payments_update'))) . " " .
@@ -213,7 +215,7 @@ class Payments extends Secure_area implements iData_controller {
         exit;
     }
 
-    private function _get_loans_aux($customer_id) {
+    private function _get_loans_aux($customer_id, $ajuste_numero_cuota = 1) {
       $loans = $this->Payment->get_loans($customer_id);
       $fecha_pago = time();
       $data['date_paid'] = 0;
@@ -222,7 +224,7 @@ class Payments extends Secure_area implements iData_controller {
       
         $loan_type_info = $this->Loan_type->get_info($loan->loan_type_id);
 
-        $loan->numero_cuota = $this->Payment->count_payments($loan->loan_id) + 1;
+        $loan->numero_cuota = $this->Payment->count_payments($loan->loan_id) + $ajuste_numero_cuota;
         $loan->first_payment = $this->Payment->first_payment($loan->loan_id);
         $factor = 1;
         $fecha_pago_teorica = '';
