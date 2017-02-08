@@ -2,11 +2,11 @@
 
 /*
 ////////  LLAMADO A FUNCION
- 
-$V = new En_Letras();
-$con_letra = strtoupper($V->ValorEnLetras($total,""));
-echo "Son: ".$con_letra." Bolivianos"; ?> </td>
-?>
+
+$this->load->library('En_Letras');
+$l = new En_Letras();
+$con_letra = $l->ValorEnLetras($total,'');
+echo "Son: ".$con_letra." Bolivianos";
 
 */
 
