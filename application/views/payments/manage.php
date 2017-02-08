@@ -54,9 +54,10 @@
                     <th style="text-align: center"><?= $this->lang->line('common_trans_id') ?></th>
                     <th style="text-align: center"><?= $this->lang->line('loans_customer') ?></th>
                     <th style="text-align: center"><?= $this->lang->line('payments_loan') ?></th>
-                    <th style="text-align: center"><?= $this->lang->line('loans_balance') ?></th>                    
+                    <th style="text-align: center"><?= $this->lang->line('loans_balance') ?></th>
                     <th style="text-align: center"><?= $this->lang->line('payments_amount') ?></th>
-                    <th style="text-align: center"><?= $this->lang->line('payments_date_paid') ?></th>
+                    <th style="text-align: center"><?= 'Multa' ?></th>
+                    <th style="text-align: center"><?= 'Fecha de Pago' ?></th>
                     <th style="text-align: center"><?= $this->lang->line('payments_teller') ?></th>
                     <th style="text-align: center; width: 1%"><?=$this->lang->line("common_action");?></th>
                 </tr>
