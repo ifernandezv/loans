@@ -117,7 +117,7 @@
                 $fecha_pago_teorica = $loan->fecha_pago_teorica;
               }
             ?>
-              <option value="<?= $loan->loan_id; ?>" <?= $selected; ?>  data-loan_balance="<?= $loan->loan_balance; ?>"  data-cuota="<?= $loan->cuota; ?>" data-numero_cuota="<?= $loan->numero_cuota; ?>" data-interes="<?= $loan->interes; ?>" data-fecha_ultimo_pago="<?= $loan->loan_pago; ?>" data-fecha_pago_teorica="<?= $loan->fecha_pago_teorica; ?>" data-interes_actual="<?= $loan->interes_actual; ?>"><?= $loan->text; ?> </option>
+              <option value="<?= $loan->loan_id; ?>" <?= $selected; ?>  data-loan_balance="<?= $loan->loan_balance; ?>"  data-cuota="<?= $loan->cuota; ?>" data-numero_cuota="<?= $loan->numero_cuota; ?>" data-interes="<?= $loan->interes; ?>" data-fecha_ultimo_pago="<?= $loan->loan_pago; ?>" data-fecha_pago_teorica="<?= $loan->fecha_pago_teorica; ?>"><?= $loan->text; ?> </option>
           <?php } ?>
         </select>
         <input type="hidden" name="balance_amount" id="balance_amount" value="<?= $balance_amount; ?>" />
@@ -293,49 +293,57 @@
 
 <script type='text/javascript'>
 
-function format_date(date) {
-  var d = date.getDate();
-  var m = date.getMonth() + 1;
-  var y = date.getFullYear();
-  return (d <= 9 ? '0' + d : d) + '-' + (m<=9 ? '0' + m : m) + '-' + y;
-}
-
-function ajustar_campos() {
-  var multa = 0;
-  var multa_por_dia =  $('#multa_por_dia').val();
-  var rate =  $('#interes').val();
-  var balance = $('#balance_amount').val();
-  var cuota = $('#paid_amount').val();
-  var ultimo_pago = new Date(parseInt($('#fecha_ultimo_pago').val())*1000);
-  var fecha_pago_teorica = new Date(parseInt($('#fecha_pago_teorica').val())*1000);
-
-  var fp_arr = ($('#date_paid').val()).split('-');
-  var fecha_pago = new Date(fp_arr[2],fp_arr[1]-1,fp_arr[0]);
-
-  if (fecha_pago > fecha_pago_teorica) {
-    multa = multa_por_dia * (fecha_pago - fecha_pago_teorica) / (24 * 3600 * 1000);
+  function format_date(date) {
+    var d = date.getDate();
+    var m = date.getMonth() + 1;
+    var y = date.getFullYear();
+    return (d <= 9 ? '0' + d : d) + '-' + (m<=9 ? '0' + m : m) + '-' + y;
   }
-  $("#multa").val(multa);
 
-  var dias = (fecha_pago - ultimo_pago) / (24 * 3600 * 1000);
+  function ajustar_campos() {
+    var multa = 0;
+    var multa_por_dia = parseInt($('#multa_por_dia').val());
+    var rate = parseInt($('#interes').val());
+    var balance = parseInt($('#balance_amount').val());
+    var cuota = parseInt($('#paid_amount').val());
+    var ultimo_pago = new Date(parseInt($('#fecha_ultimo_pago').val())*1000);
+    var fecha_pago_teorica = new Date(parseInt($('#fecha_pago_teorica').val())*1000);
 
-  console.log('fecha_pago: ',fecha_pago);
-  console.log('fecha_pago_teorica: ',fecha_pago_teorica);
-  console.log('multa: ', multa);
+    var fp_arr = ($('#date_paid').val()).split('-');
+    var fecha_pago = new Date(fp_arr[2],fp_arr[1]-1,fp_arr[0]);
 
-  $("#ultimo_pago").html(format_date(ultimo_pago));
-  $("#n_cuota").html($('#numero_cuota').val());
+    if (fecha_pago > fecha_pago_teorica) {
+      multa = multa_por_dia * (fecha_pago - fecha_pago_teorica) / (24 * 3600 * 1000);
+    }
+    $("#multa").val(multa.toFixed(2));
 
-  var interes = balance*(((rate/100)/365)*dias);
-  if ( interes > cuota ) {
-    cuota = interes;
-    $("#paid_amount").val(interes.toFixed(2));
+    var dias = (fecha_pago - ultimo_pago) / (24 * 3600 * 1000);
+
+    $("#ultimo_pago").html(format_date(ultimo_pago));
+    $("#n_cuota").html($('#numero_cuota').val());
+
+    if ( cuota > balance) {
+      cuota = balance;
+    }
+
+    var interes = balance*(((rate/100)/365)*dias);
+
+    if ( interes > cuota ) {
+      cuota = interes;
+    }
+
+    $("#paid_amount").val(cuota.toFixed(2));
+
+    var capital = cuota - interes;
+    var capital_interes = capital.toFixed(2) + ' / ' + interes.toFixed(2);
+    $("#capital_interes").html(capital_interes);
+    $('#balance_amount').val(balance - capital);
+
+    console.log('capital: ',capital);
+    console.log('balance: ',balance);
+    console.log('interes: ', interes);
   }
-  var capital = cuota - interes;
-  var capital_interes = capital.toFixed(2) + ' / ' + interes.toFixed(2);
-  $("#capital_interes").html(capital_interes);
 
-}
   //validation and submit handling
   $(document).ready(function () {
     $("#div-form").height($(window).height() - 250);
@@ -353,12 +361,6 @@ function ajustar_campos() {
       $("#balance_amount").val(balance.replace(/[^\d.]/g, ''));
     });
 
-    //INTERES_ACTUAL 
-    $(document).on("change", "#loan_id", function () {
-      var interes_actual = $('#loan_id option:selected').data('interes_actual')+'';
-      $("#interes_actual").val(interes_actual.replace(/[^\d.]/g, ''));
-    });
-    
     //-----///
     
     
@@ -482,7 +484,7 @@ function ajustar_campos() {
               options.empty();
               console.log('data: ',data);
               $.each(data, function () {
-                  options.append($("<option />").val(this.loan_id).attr("data-loan_balance", this.loan_balance).attr("data-cuota", this.cuota).attr("data-numero_cuota", this.numero_cuota).attr("data-interes_actual", this.interes_actual).attr("data-interes", this.interes).attr("data-fecha_pago", this.fecha_pago).attr("data-fecha_pago_teorica", this.fecha_pago_teorica).attr("data-fecha_ultimo_pago", this.loan_pago).text(this.loan_type + " (" + this.loan_amount + ") - " + this.loan_balance));
+                  options.append($("<option />").val(this.loan_id).attr("data-loan_balance", this.loan_balance).attr("data-cuota", this.cuota).attr("data-numero_cuota", this.numero_cuota).attr("data-interes", this.interes).attr("data-fecha_pago", this.fecha_pago).attr("data-fecha_pago_teorica", this.fecha_pago_teorica).attr("data-fecha_ultimo_pago", this.loan_pago).text(this.loan_type + " (" + this.loan_amount + ") - " + this.loan_balance));
               });
 
               var balance = $('#loan_id option:selected').data('loan_balance')+'';
@@ -495,14 +497,11 @@ function ajustar_campos() {
               $("#numero_cuota").val(numero_cuota);
               $("#n_cuota").html(numero_cuota);
 
-              var interes_actual = $('#loan_id option:selected').data('interes_actual')+'';
-              $("#interes_actual").val(interes_actual.replace(/[^\d.]/g, ''));
-
               var interes = $('#loan_id option:selected').data('interes')+'';
               $("#interes").val(interes.replace(/[^\d.]/g, ''));
 
               var multa = $('#loan_id option:selected').data('multa')+'';
-              $("#multa").val(interes.replace(/[^\d.]/g, ''));
+              $("#multa").val(multa.replace(/[^\d.]/g, ''));
 
               var fecha_pago = $('#loan_id option:selected').data('fecha_pago');
               $("#fecha_pago").val(fecha_pago);
