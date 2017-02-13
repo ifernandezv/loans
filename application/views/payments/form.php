@@ -117,10 +117,11 @@
                 $fecha_pago_teorica = $loan->fecha_pago_teorica;
               }
             ?>
-              <option value="<?= $loan->loan_id; ?>" <?= $selected; ?>  data-loan_balance="<?= $loan->loan_balance; ?>"  data-cuota="<?= $loan->cuota; ?>" data-numero_cuota="<?= $loan->numero_cuota; ?>" data-interes="<?= $loan->interes; ?>" data-fecha_ultimo_pago="<?= $loan->loan_pago; ?>" data-fecha_pago_teorica="<?= $loan->fecha_pago_teorica; ?>"><?= $loan->text; ?> </option>
+            <option value="<?= $loan->loan_id; ?>" <?= $selected; ?>  data-loan_balance="<?= $loan->loan_balance; ?>"  data-cuota="<?= $loan->cuota; ?>" data-numero_cuota="<?= $loan->numero_cuota; ?>" data-interes="<?= $loan->interes; ?>" data-fecha_ultimo_pago="<?= $loan->loan_pago; ?>" data-fecha_pago_teorica="<?= $loan->fecha_pago_teorica; ?>"><?= $loan->text; ?> </option>
           <?php } ?>
         </select>
         <input type="hidden" name="balance_amount" id="balance_amount" value="<?= $balance_amount; ?>" />
+        <input type="hidden" name="old_balance_amount" id="old_balance_amount" value="<?= $balance_amount; ?>" />
         <input type="hidden" name="cuota" id="cuota" value="<?= $loan_cuota; ?>" />
         <input type="hidden" name="numero_cuota" id="numero_cuota" value="<?= $numero_cuota; ?>" />
         <input type="hidden" name="interes" id="interes" value="<?= $loan_interes; ?>" />
@@ -221,6 +222,18 @@
         </div>
 
         <div class="field_row clearfix">
+          <?php
+            echo form_label('Balance:',
+                            'balance_info',
+                            array('class' => 'wide')
+                  );
+          ?>
+          <div class='form_field'>
+            <span name="balance_info" id="balance_info"></span>
+          </div>
+        </div>
+
+        <div class="field_row clearfix">
             <?php echo form_label('Multa:', 'multa', array('class' => 'wide')); ?>
             <div class='form_field'>
                 <?php
@@ -302,10 +315,10 @@
 
   function ajustar_campos() {
     var multa = 0;
-    var multa_por_dia = parseInt($('#multa_por_dia').val());
-    var rate = parseInt($('#interes').val());
-    var balance = parseInt($('#balance_amount').val());
-    var cuota = parseInt($('#paid_amount').val());
+    var multa_por_dia = parseFloat($('#multa_por_dia').val());
+    var rate = parseFloat($('#interes').val());
+    var balance = parseFloat($('#old_balance_amount').val());
+    var cuota = parseFloat($('#paid_amount').val());
     var ultimo_pago = new Date(parseInt($('#fecha_ultimo_pago').val())*1000);
     var fecha_pago_teorica = new Date(parseInt($('#fecha_pago_teorica').val())*1000);
 
@@ -338,6 +351,8 @@
     var capital_interes = capital.toFixed(2) + ' / ' + interes.toFixed(2);
     $("#capital_interes").html(capital_interes);
     $('#balance_amount').val(balance - capital);
+    var balance_info = balance - capital;
+    $("#balance_info").html(balance_info.toFixed(2));
 
     console.log('capital: ',capital);
     console.log('balance: ',balance);
@@ -395,8 +410,8 @@
       var fecha_pago_teorica = $('#loan_id option:selected').data('fecha_pago_teorica');
       $('#fecha_pago_teorica').val(fecha_pago_teorica);
     });
-    
-    $(document).on("change", "#loan_id", function () {
+
+    $(document).on("change", "#loan_id,#paid_amount", function () {
       ajustar_campos();
     });
 
@@ -489,6 +504,7 @@
 
               var balance = $('#loan_id option:selected').data('loan_balance')+'';
               $("#balance_amount").val(balance.replace(/[^\d.]/g, ''));
+              $("#old_balance_amount").val(balance.replace(/[^\d.]/g, ''));
 
               var cuota = $('#loan_id option:selected').data('cuota')+'';
               $("#paid_amount").val(cuota.replace(/[^\d.]/g, ''));
