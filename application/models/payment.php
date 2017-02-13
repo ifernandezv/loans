@@ -98,7 +98,7 @@ class Payment extends CI_Model {
     $select = "lp.*, CONCAT(customer.first_name, ' ', customer.last_name) as customer_name, 
                CONCAT(teller.first_name, ' ',teller.last_name) as teller_name, 
                loan_types.name as loan_type,
-               (SELECT count(*) from kpos_loan_payments where lp.date_paid >= date_paid) as numero_cuota";
+               (SELECT count(*) from kpos_loan_payments where loan_payment_id <= lp.loan_payment_id) as numero_cuota";
 
     $this->db->select($select, FALSE);
     $this->db->from('loan_payments as lp');
