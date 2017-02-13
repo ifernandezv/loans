@@ -53,7 +53,7 @@ class Payments extends Secure_area implements iData_controller {
       $person = $this->Person->get_info($payment->teller_id);
       $customer = $this->Person->get_info($payment->customer_id);
 
-      $data['numero_cuota'] = $this->Payment->count_payments($loan->loan_id);
+      $data['numero_cuota'] = $payment->numero_cuota;
 
       // pdf viewer
       $data['count'] = $payment->loan_payment_id;
@@ -257,14 +257,11 @@ class Payments extends Secure_area implements iData_controller {
         $ultima_fecha_pago = $loan->loan_pago;
         $interes = $loan_type_info->percent_charge1; 
 
-        $interes_actual = 0;
-        
         $loan->multa = $loan_type_info->percent_charge2;
         $loan->fecha_pago_teorica = $fecha_pago_teorica;
         $loan->fecha_pago = date('d-m-Y', $ultima_fecha_pago);
         $loan->loan_amount = to_currency($loan->loan_amount);
         $loan->loan_balance = to_currency($loan->loan_balance);
-        $loan->interes_actual = to_currency($interes_actual);
         $loan->interes = $loan_type_info->percent_charge1;
         $loan->text = $loan->loan_type . " (" . $loan->loan_amount . ' - ' .
                        date("d/m/Y", $loan->loan_applied_date) .
