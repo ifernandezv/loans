@@ -487,6 +487,8 @@ class Loan extends CI_Model {
     
       $new_balance = $this->_get_loan_balance($loan_data);
 
+      $new_balance = $amount;
+
       $data = array(
         'loan_balance' => $new_balance,
         'loan_payment_date' => $due_date,

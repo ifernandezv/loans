@@ -120,7 +120,7 @@ class Payments extends Secure_area implements iData_controller {
         //New Payment
         if ($payment_id == -1) {
           // deduct the loan amount            
-          $this->Loan->update_balance($payment_data['paid_amount'], 
+          $this->Loan->update_balance($payment_data['balance_amount'], 
                                       $payment_data['loan_id'], 
                                       $payment_data['date_paid']);
           echo json_encode(array(
