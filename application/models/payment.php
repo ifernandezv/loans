@@ -99,15 +99,16 @@ class Payment extends CI_Model {
    */
 
   function get_info($payment_id) {
-    $select = "loan_payments.*, CONCAT(customer.first_name, ' ', customer.last_name) as customer_name, 
+    $select = "lp.*, CONCAT(customer.first_name, ' ', customer.last_name) as customer_name, 
                CONCAT(teller.first_name, ' ',teller.last_name) as teller_name, 
-               loan_types.name as loan_type, 3 as interes_actual";
+               loan_types.name as loan_type,
+               (SELECT count(*) from kpos_loan_payments where lp.date_paid <= date_paid) as numero_cuota";
 
     $this->db->select($select, FALSE);
-    $this->db->from('loan_payments');
-    $this->db->join('pdv.people as customer', 'customer.person_id = loan_payments.customer_id', 'LEFT');
-    $this->db->join('pdv.people as teller', 'teller.person_id = loan_payments.teller_id', 'LEFT');
-    $this->db->join('loans', 'loans.loan_id = loan_payments.loan_id', 'LEFT');
+    $this->db->from('loan_payments as lp');
+    $this->db->join('pdv.people as customer', 'customer.person_id = lp.customer_id', 'LEFT');
+    $this->db->join('pdv.people as teller', 'teller.person_id = lp.teller_id', 'LEFT');
+    $this->db->join('loans', 'loans.loan_id = lp.loan_id', 'LEFT');
     $this->db->join('loan_types', 'loan_types.loan_type_id = loans.loan_type_id', 'LEFT');
     $this->db->where('loan_payment_id', $payment_id);
 
@@ -241,11 +242,9 @@ description LIKE '%" . $this->db->escape_like_str($search) . "%'");
   }
 
   function get_loans($customer_id) {
-//        $this->db->select('loans.*, loan_types.name as loan_type, loan_types.term as loan_term, loan_payments.multa as multa');
-    $this->db->select('loans.*, loan_types.name as loan_type, loan_types.term as loan_term, loans.account as interes_actual');
+    $this->db->select('loans.*, loan_types.name as loan_type, loan_types.term as loan_term');
     $this->db->from('loans');
     $this->db->join('loan_types', "loan_types.loan_type_id = loans.loan_type_id");
-//        $this->db->join('loan_payments', "loan_payments.loan_id = loans.loan_id");
     $this->db->where("customer_id", $customer_id);
     $this->db->where("customer_id >", 0);
     $this->db->where("delete_flag", 0);
