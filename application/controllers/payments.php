@@ -215,6 +215,18 @@ class Payments extends Secure_area implements iData_controller {
         exit;
     }
 
+    private function _calcular_fechas($payment_id) {
+      $fechas = $this->Payment->get_fechas($payment_id);
+      $resultado = array();
+      if (count($fechas) >= 1) {
+        $resultado['fecha_pago'] = $fechas[0]['date_paid'];
+      }
+      if (count($fechas) >= 2) {
+        $resultado['fecha_pago_anterior'] = $fechas[1]['date_paid'];
+      }
+      return $resultado;
+    }
+
     private function _get_loans_aux($customer_id, $ajuste_numero_cuota = 1) {
       $loans = $this->Payment->get_loans($customer_id);
       $fecha_pago = time();
