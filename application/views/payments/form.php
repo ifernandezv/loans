@@ -104,20 +104,20 @@
             $loan_interes = '';
             $fecha_ultimo_pago = '';
             $fecha_pago_teorica = '';
-
+error_log('payment_info: '.print_r($payment_info,true));
             foreach ($loans as $loan) {
               $selected = '';
               if ($loan->loan_id === $payment_info->loan_id) {
                 $selected = 'selected="selected"';
-                $balance_amount = $loan->loan_balance;
+                $balance_amount = $payment_info->balance_amount;
                 $loan_cuota = $loan->cuota;
-                $numero_cuota = $loan->numero_cuota;
+                $numero_cuota = $payment_info->numero_cuota;
                 $loan_interes = $loan->interes;
                 $fecha_ultimo_pago = $loan->loan_pago;
                 $fecha_pago_teorica = $loan->fecha_pago_teorica;
               }
             ?>
-            <option value="<?= $loan->loan_id; ?>" <?= $selected; ?>  data-loan_balance="<?= $loan->loan_balance; ?>"  data-cuota="<?= $loan->cuota; ?>" data-numero_cuota="<?= $loan->numero_cuota; ?>" data-interes="<?= $loan->interes; ?>" data-fecha_ultimo_pago="<?= $loan->loan_pago; ?>" data-fecha_pago_teorica="<?= $loan->fecha_pago_teorica; ?>"><?= $loan->text; ?> </option>
+            <option value="<?= $loan->loan_id; ?>" <?= $selected; ?>  data-loan_balance="<?= $payment_info->balance_amount; ?>"  data-cuota="<?= $loan->cuota; ?>" data-numero_cuota="<?= $payment_info->numero_cuota; ?>" data-interes="<?= $loan->interes; ?>" data-fecha_ultimo_pago="<?= $loan->loan_pago; ?>" data-fecha_pago_teorica="<?= $loan->fecha_pago_teorica; ?>"><?= $loan->text; ?> </option>
           <?php } ?>
         </select>
         <input type="hidden" name="balance_amount" id="balance_amount" value="<?= $balance_amount; ?>" />
@@ -151,7 +151,7 @@
                   );
           ?>
           <div class='form_field'>
-            <span name="n_cuota" id="n_cuota"></span>
+            <span name="n_cuota" id="n_cuota"><?= $payment_info->numero_cuota ?></span>
           </div>
         </div>
 
@@ -217,7 +217,7 @@
                   );
           ?>
           <div class='form_field'>
-            <span name="capital_interes" id="capital_interes"></span>
+            <span name="capital_interes" id="capital_interes"> </span>
           </div>
         </div>
 
@@ -229,7 +229,7 @@
                   );
           ?>
           <div class='form_field'>
-            <span name="balance_info" id="balance_info"></span>
+            <span name="balance_info" id="balance_info"> </span>
           </div>
         </div>
 
@@ -356,13 +356,15 @@
 
     console.log('capital: ',capital);
     console.log('balance: ',balance);
-    console.log('interes: ', interes);
+    console.log('dias: ', dias);
   }
 
   //validation and submit handling
   $(document).ready(function () {
     $("#div-form").height($(window).height() - 250);
-    
+
+    ajustar_campos();
+
     $("#inp-customer-id").change(function () {
       get_customer_by_id($(this).val());
     });
@@ -374,6 +376,7 @@
     $(document).on("change", "#loan_id", function () {
       var balance = $('#loan_id option:selected').data('loan_balance')+'';
       $("#balance_amount").val(balance.replace(/[^\d.]/g, ''));
+      $("#old_balance_amount").val(balance.replace(/[^\d.]/g, ''));
     });
 
     //-----///
