@@ -47,7 +47,7 @@ class Loans extends Secure_area implements iData_controller {
 
     function view($loan_id = -1) {
       $data['loan_info'] = $this->Loan->get_info($loan_id);
-  
+
       $data['guarantee_info'] = $this->Guarantee->get_info($loan_id);
       $loan_types = $this->Loan_type->get_multiple_loan_types();
 
@@ -57,7 +57,7 @@ class Loans extends Secure_area implements iData_controller {
       }
 
       $info_l = array();
-    
+
       foreach ($loan_types as $loan_type){
         $info_l['loan_type_id']= $loan_type->loan_type_id;
         $info_l['term']= $loan_type->term;
@@ -88,7 +88,10 @@ class Loans extends Secure_area implements iData_controller {
 
       $file = array();
       foreach ($attachments as $attachment) {
-        $dFile = $this->_get_formatted_file($attachment->attachment_id, $attachment->filename, $attachment->descriptions);
+        $dFile = $this->_get_formatted_file(
+                            $attachment->attachment_id,
+                            $attachment->filename,
+                            $attachment->descriptions);
         $file[$dFile["id"]] = $dFile;
       }
 
