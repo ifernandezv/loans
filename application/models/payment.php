@@ -90,6 +90,14 @@ class Payment extends CI_Model {
     return '';
   }
 
+  function get_fechas($loan_id) {
+    $this->db->where('loan_id', $loan_id);
+    $this->db->where('delete_flag', 0);
+    $this->db->from('loan_payments');
+    $this->db->order_by('loan_payment_id','desc');
+    return $this->db->get();
+  }
+
   /*
     Gets information about a particular loan
    */
@@ -112,8 +120,6 @@ class Payment extends CI_Model {
 //    error_log('query en get_info: '.print_r($result,true));
 
     $query = $this->db->get();
-
-error_log('query->row en get_info: '.print_r($query->row(),true));
 
     if ($query->num_rows() == 1) {
       return $query->row();
