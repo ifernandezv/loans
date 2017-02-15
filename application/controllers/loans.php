@@ -45,83 +45,80 @@ class Loans extends Secure_area implements iData_controller {
         
     }
 
-    function view($loan_id = -1)
-    {
-        $data['loan_info'] = $this->Loan->get_info($loan_id);
-    
-        $data['guarantee_info'] = $this->Guarantee->get_info($loan_id);
-        $loan_types = $this->Loan_type->get_multiple_loan_types();
+    function view($loan_id = -1) {
+      $data['loan_info'] = $this->Loan->get_info($loan_id);
+  
+      $data['guarantee_info'] = $this->Guarantee->get_info($loan_id);
+      $loan_types = $this->Loan_type->get_multiple_loan_types();
 
-        $tmp = array("" => $this->lang->line("common_please_select"));
-        foreach ($loan_types as $loan_type):
-            $tmp[$loan_type->loan_type_id] = $loan_type->name;
-        endforeach;
+      $tmp = array("" => $this->lang->line("common_please_select"));
+      foreach ($loan_types as $loan_type) {
+        $tmp[$loan_type->loan_type_id] = $loan_type->name;
+      }
+
+      $info_l = array();
     
-    $info_l = array();
-    
-    foreach ($loan_types as $loan_type):
-      $info_l['loan_type_id']= $loan_type->loan_type_id;
+      foreach ($loan_types as $loan_type){
+        $info_l['loan_type_id']= $loan_type->loan_type_id;
         $info_l['term']= $loan_type->term;
-      $info_l['tasa']= $loan_type->percent_charge1;
-      $info_l['schedule']= $loan_type->payment_schedule;
-        
-    $info_loans[$loan_type->loan_type_id] = $info_l;
-    
-    endforeach;
-    
-        $data['loan_types'] = $tmp;
-    
-    $data['info_loan'] = $info_loans;
+        $info_l['tasa']= $loan_type->percent_charge1;
+        $info_l['schedule']= $loan_type->payment_schedule;
 
-        $data['misc_fees'] = array(
-            array("", "")
-        );
+        $info_loans[$loan_type->loan_type_id] = $info_l;
+      }
+      $data['loan_types'] = $tmp;
 
-        $misc_fees = json_decode($data['loan_info']->misc_fees, true);
+      $data['info_loan'] = $info_loans;
 
-        if (is_array($misc_fees))
-        {
-            $tmp = array();
-            foreach ($misc_fees as $fee => $charge):
-                $tmp[] = array($fee, $charge);
-            endforeach;
-            $data['misc_fees'] = $tmp;
+      $data['misc_fees'] = array(
+          array("", "")
+      );
+
+      $misc_fees = json_decode($data['loan_info']->misc_fees, true);
+
+      if (is_array($misc_fees)) {
+        $tmp = array();
+        foreach ($misc_fees as $fee => $charge) {
+          $tmp[] = array($fee, $charge);
         }
+        $data['misc_fees'] = $tmp;
+      }
 
-        $attachments = $this->Loan->get_attachments($loan_id);
+      $attachments = $this->Loan->get_attachments($loan_id);
 
-        $file = array();
-        foreach ($attachments as $attachment)
-        {
-            $dFile = $this->_get_formatted_file($attachment->attachment_id, $attachment->filename, $attachment->descriptions);
-            $file[$dFile["id"]] = $dFile;
-        }
+      $file = array();
+      foreach ($attachments as $attachment) {
+        $dFile = $this->_get_formatted_file($attachment->attachment_id, $attachment->filename, $attachment->descriptions);
+        $file[$dFile["id"]] = $dFile;
+      }
 
-        $data['attachments'] = $file;
+      $data['attachments'] = $file;
 
-        $loan_status = (isset($data['loan_info']->loan_status) && trim($data['loan_info']->loan_status) !== "") ? $this->lang->line("common_".strtolower($data['loan_info']->loan_status)) : $this->lang->line("common_pending");
-        if ($data['loan_info']->loan_balance <= 0 && $loan_id > -1)
-        {
-            $loan_status = "paid";
-        }
-        $data['loan_status'] = $loan_status;
+      $loan_status = 
+        (isset($data['loan_info']->loan_status) && trim($data['loan_info']->loan_status) !== "") 
+        ? $this->lang->line("common_".strtolower($data['loan_info']->loan_status))
+        : $this->lang->line("common_pending");
 
-        $employees = $this->Employee->get_all()->result();
-        $emps =array();
-        foreach ($employees as $employee)
-        {
-            $emps[$employee->person_id] = $employee->first_name . " " . $employee->last_name;
-        }
+      if ($data['loan_info']->loan_balance <= 0 && $loan_id > -1) {
+        $loan_status = "paid";
+      }
+      $data['loan_status'] = $loan_status;
 
-        $data['employees'] = $emps;
+      $employees = $this->Employee->get_all()->result();
+      $emps =array();
+      foreach ($employees as $employee) {
+        $emps[$employee->person_id] = $employee->first_name . " " . $employee->last_name;
+      }
 
-        $proof_ids = json_decode($data['guarantee_info']->proof, TRUE);
-        $pimage_ids = json_decode($data['guarantee_info']->images, TRUE);
+      $data['employees'] = $emps;
 
-        $data["proofs"] = $this->_get_files($proof_ids, $file);
-        $data["pimages"] = $this->_get_files($pimage_ids, $file);
+      $proof_ids = json_decode($data['guarantee_info']->proof, TRUE);
+      $pimage_ids = json_decode($data['guarantee_info']->images, TRUE);
 
-        $this->load->view("loans/form", $data);
+      $data["proofs"] = $this->_get_files($proof_ids, $file);
+      $data["pimages"] = $this->_get_files($pimage_ids, $file);
+
+      $this->load->view("loans/form", $data);
     }
 
     private function _get_files($ids, $file)
