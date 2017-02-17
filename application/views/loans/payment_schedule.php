@@ -21,7 +21,7 @@
     </head>
     <body>
         <div class="loans_pdf_company_name">
-            <img id="img-pic" src="<?= (trim($this->config->item("logo")) !== "") ? site_url("/uploads/logo/" . $this->config->item('logo')) : site_url("/uploads/common/no_img.png"); ?>" style="height:40px" />
+            <img id="img-pic" src="<?= (trim($this->config->item("logo")) !== "") ? site_url("/uploads/logo/" . $this->config->item('logo')) : site_url("/uploads/common/no_img.png"); ?>" style="height:100px" />
             <h4><?= $company_name; ?></h4>
             <h5>
                 <?= $company_address; ?><br/>
