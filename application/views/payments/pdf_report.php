@@ -71,7 +71,7 @@
         </tr>
         <tr>
           <td style="font-size:16px">Son:</td>
-          <td align="right" style="font-size:14px"><?= $literal; ?> Bs.</td>
+          <td align="right" style="font-size:14px"><?= $literal; ?> Bolivianos.</td>
         </tr>
         <tr>
           <td align="center" style="font-size:10px;padding-top:50px;">

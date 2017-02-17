@@ -62,7 +62,7 @@ class En_Letras {
     $s = $s . $Moneda;
 
     if($fraccion != $this->Void) {
-      $s = $s . " " . $fraccion. "/100";
+      $s = $s . " con " . $fraccion. "/100";
     }
     $letrass=$Signo . $s . " ";
     return ($Signo . $s . " ");
