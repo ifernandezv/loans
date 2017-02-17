@@ -25,17 +25,20 @@ class Payment extends CI_Model {
       "teller.first_name"
     );
 
-    $select = "loan_payments.*, CONCAT(customer.first_name, ' ', customer.last_name) as customer_name, 
+    $select = "lp.*, CONCAT(customer.first_name, ' ', customer.last_name) as customer_name, 
                CONCAT(teller.first_name, ' ',teller.last_name) as teller_name, 
+               (SELECT count(*) from kpos_loan_payments
+                WHERE loan_payment_id <= lp.loan_payment_id
+                AND loan_id = lp.loan_id) as numero_cuota,
                loan_types.name as loan_type,
                loans.loan_amount,
                loans.loan_balance";
 
     $this->db->select($select, FALSE);
-    $this->db->from('loan_payments');
-    $this->db->join('pdv.people as customer', 'customer.person_id = loan_payments.customer_id', 'LEFT');
-    $this->db->join('pdv.people as teller', 'teller.person_id = loan_payments.teller_id', 'LEFT');
-    $this->db->join('loans', 'loans.loan_id = loan_payments.loan_id', 'LEFT');
+    $this->db->from('loan_payments as lp');
+    $this->db->join('pdv.people as customer', 'customer.person_id = lp.customer_id', 'LEFT');
+    $this->db->join('pdv.people as teller', 'teller.person_id = lp.teller_id', 'LEFT');
+    $this->db->join('loans', 'loans.loan_id = lp.loan_id', 'LEFT');
     $this->db->join('loan_types as loan_types', 'loan_types.loan_type_id = loans.loan_type_id', 'LEFT');
 
     if ($search !== "") {
@@ -56,7 +59,7 @@ class Payment extends CI_Model {
       $this->db->order_by("loan_payment_id", "desc");
     }
 
-    $this->db->where('loan_payments.delete_flag', 0);
+    $this->db->where('lp.delete_flag', 0);
 
     $this->db->limit($limit);
     $this->db->offset($offset);
