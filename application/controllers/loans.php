@@ -45,8 +45,14 @@ class Loans extends Secure_area implements iData_controller {
         
     }
 
+    function get_info($loan_id) {
+      $loan_info = $this->Loan->get_info($loan_id);
+      $fechas = $this->Payment->get_fechas($loan_id);
+      return $loan_info;
+    }
+
     function view($loan_id = -1) {
-      $data['loan_info'] = $this->Loan->get_info($loan_id);
+      $data['loan_info'] = $this->get_info($loan_id);
 
       $data['guarantee_info'] = $this->Guarantee->get_info($loan_id);
       $loan_types = $this->Loan_type->get_multiple_loan_types();
