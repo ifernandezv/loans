@@ -53,13 +53,15 @@
                     <th style="text-align: center; width: 1%"><input type="checkbox" class="select_all_" /></th>
                     <th style="text-align: center"><?= $this->lang->line('common_trans_id') ?></th>
                     <th style="text-align: center"><?= $this->lang->line('loans_customer') ?></th>
+                    <th style="text-align: center"><?= 'Préstamo N°' ?></th>
                     <th style="text-align: center"><?= $this->lang->line('payments_loan') ?></th>
+                    <th style="text-align: center"><?= 'Cuota' ?></th>
                     <th style="text-align: center"><?= $this->lang->line('loans_balance') ?></th>
                     <th style="text-align: center"><?= $this->lang->line('payments_amount') ?></th>
                     <th style="text-align: center"><?= 'Multa' ?></th>
                     <th style="text-align: center"><?= 'Fecha de Pago' ?></th>
                     <th style="text-align: center"><?= $this->lang->line('payments_teller') ?></th>
-                    <th style="text-align: center; width: 1%"><?=$this->lang->line("common_action");?></th>
+                    <th style="text-align: center; width: 2%"><?=$this->lang->line("common_action");?></th>
                 </tr>
             </thead>
         </table>
@@ -86,7 +88,7 @@
             },
             "processing": true,
             "serverSide": true,
-            "aLengthMenu": [[50, 100, 200, 100000], [50, 100, 200, "<?=$this->lang->line("common_all")?>"]],
+            "aLengthMenu": [[50, 100, 200, 100, 100000], [50, 100, 200, 100, "<?=$this->lang->line("common_all")?>"]],
             "iDisplayLength": 50,
             "order": [1, "desc"],
             "ajax": {
