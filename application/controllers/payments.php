@@ -5,36 +5,37 @@ require_once ("interfaces/idata_controller.php");
 
 class Payments extends Secure_area implements iData_controller {
 
-    function __construct()
-    {
-        parent::__construct('payments');
-    }
+  function __construct() {
+    parent::__construct('payments');
+  }
 
-    function index()
-    {
-        $data['controller_name'] = strtolower(get_class());
-        $data['form_width'] = $this->get_form_width();
-        $this->load->view('payments/manage', $data);
-    }
+  function index() {
+    $data['controller_name'] = strtolower(get_class());
+    $data['form_width'] = $this->get_form_width();
+    $this->load->view('payments/manage', $data);
+  }
 
-    function search()
-    {
-        
-    }
+  function report() {
+    $data['controller_name'] = strtolower(get_class());
+    $data['form_width'] = $this->get_form_width();
+    $this->load->view('payments/report', $data);
+  }
 
-    /*
-      Gives search suggestions based on what is being searched for
-     */
+  function search() {
+      
+  }
 
-    function suggest()
-    {
-        
-    }
+  /*
+    Gives search suggestions based on what is being searched for
+   */
 
-    function get_row()
-    {
-        
-    }
+  function suggest() {
+      
+  }
+
+  function get_row() {
+      
+  }
 
     function view($payment_id = -1) {
       $data['multa_por_dia'] = $this->Appconfig->get('multa_por_dia');
@@ -101,6 +102,7 @@ class Payments extends Secure_area implements iData_controller {
         'loan_id' => $this->input->post('loan_id'),
         'customer_id' => $this->input->post('customer'),
         'paid_amount' => $this->input->post('paid_amount'),
+        'interes' => $this->input->post('interes_pagado'),
         'balance_amount' => $this->input->post('balance_amount'),
         'date_paid' => strtotime($this->input->post('date_paid')),
         'remarks' => $this->input->post('remarks'),

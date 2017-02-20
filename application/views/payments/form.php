@@ -104,7 +104,7 @@
             $loan_interes = '';
             $fecha_ultimo_pago = '';
             $fecha_pago_teorica = '';
-error_log('payment_info: '.print_r($payment_info,true));
+
             foreach ($loans as $loan) {
               $selected = '';
               if ($loan->loan_id === $payment_info->loan_id) {
@@ -125,6 +125,7 @@ error_log('payment_info: '.print_r($payment_info,true));
         <input type="hidden" name="cuota" id="cuota" value="<?= $loan_cuota; ?>" />
         <input type="hidden" name="numero_cuota" id="numero_cuota" value="<?= $numero_cuota; ?>" />
         <input type="hidden" name="interes" id="interes" value="<?= $loan_interes; ?>" />
+        <input type="hidden" name="interes_pagado" id="interes_pagado" value="" />
         <input type="hidden" name="fecha_ultimo_pago" id="fecha_ultimo_pago" value="<?= $fecha_ultimo_pago; ?>" />
         <input type="hidden" name="fecha_pago_teorica" id="fecha_pago_teorica" value="<?= $fecha_pago_teorica; ?>" />
             
@@ -326,7 +327,7 @@ error_log('payment_info: '.print_r($payment_info,true));
     var fecha_pago = new Date(fp_arr[2],fp_arr[1]-1,fp_arr[0]);
 
     if (fecha_pago > fecha_pago_teorica) {
-      multa = multa_por_dia * (fecha_pago - fecha_pago_teorica) / (24 * 3600 * 1000);
+      multa = multa_por_dia * parseInt((fecha_pago - fecha_pago_teorica) / (24 * 3600 * 1000));
     }
     $("#multa").val(multa.toFixed(2));
 
@@ -353,6 +354,7 @@ error_log('payment_info: '.print_r($payment_info,true));
     $('#balance_amount').val(balance - capital);
     var balance_info = balance - capital;
     $("#balance_info").html(balance_info.toFixed(2));
+    $('#interes_pagado').val(interes.toFixed(2));
 
     console.log('capital: ',capital);
     console.log('balance: ',balance);
