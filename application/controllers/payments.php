@@ -219,6 +219,44 @@ class Payments extends Secure_area implements iData_controller {
         exit;
     }
 
+  function data_reporte() {
+    $index = isset($_GET['order'][0]['column']) ? $_GET['order'][0]['column'] : 1;
+    $dir = isset($_GET['order'][0]['dir']) ? $_GET['order'][0]['dir'] : "asc";
+    $order = array("index" => $index, "direction" => $dir);
+    $length = isset($_GET['length'])?$_GET['length']:50;
+    $start = isset($_GET['start'])?$_GET['start']:0;
+    $key = isset($_GET['search']['value'])?$_GET['search']['value']:"";
+
+    $payments = $this->Payment->get_all($length, $start, $key, $order);
+
+    $format_result = array();
+
+    foreach ($payments->result() as $payment) {
+      $format_result[] = array(
+        ucwords($payment->customer_name),
+        $payment->loan_id,
+        $payment->loan_type . " (" . to_currency($payment->loan_amount) . ")",
+        $payment->numero_cuota,
+        to_currency($payment->paid_amount),
+        to_currency($payment->paid_amount - $payment->interes),
+        to_currency($payment->interes),
+        to_currency($payment->multa),
+        date("d/m/Y", $payment->date_paid),
+        anchor('payments/view/' . $payment->loan_payment_id, $this->lang->line('common_view'), array('class' => 'modal_link btn btn-success', 'data-toggle' => 'modal', 'data-target' => '#payment_modal', "title" => $this->lang->line('payments_update'))) . " " .
+        anchor('payments/printIt/' . $payment->loan_payment_id, $this->lang->line('common_print'), array('class' => 'modal_link btn btn-default', 'data-toggle' => 'modal', 'data-target' => '#print_modal', "title" => $this->lang->line('payments_print')))
+      );
+    }
+
+    $data = array(
+      "recordsTotal" => $this->Payment->count_all(),
+      "recordsFiltered" => $this->Payment->count_all(),
+      "data" => $format_result
+    );
+
+    echo json_encode($data);
+    exit;
+  }
+
     private function _calcular_fechas($payment_id) {
       $fechas = $this->Payment->get_fechas($payment_id);
       $resultado = array();
