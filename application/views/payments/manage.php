@@ -6,7 +6,7 @@
     }
     table#datatable td:nth-child(2),
     td:nth-child(7), 
-    td:nth-child(9) {
+    td:nth-child(12) {
         white-space: nowrap;
         text-align: center;
     }
@@ -88,7 +88,7 @@
             },
             "processing": true,
             "serverSide": true,
-            "aLengthMenu": [[50, 100, 200, 100, 100000], [50, 100, 200, 100, "<?=$this->lang->line("common_all")?>"]],
+            "aLengthMenu": [[50, 100, 200, 100000], [50, 100, 200, "<?=$this->lang->line("common_all")?>"]],
             "iDisplayLength": 50,
             "order": [1, "desc"],
             "ajax": {
