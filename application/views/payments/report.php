@@ -50,17 +50,15 @@
         <table id="datatable" class="table table-hover table-bordered" cellspacing="0" width="100%">
             <thead>
                 <tr>
-                    <th style="text-align: center; width: 1%"><input type="checkbox" class="select_all_" /></th>
-                    <th style="text-align: center"><?= $this->lang->line('common_trans_id') ?></th>
                     <th style="text-align: center"><?= $this->lang->line('loans_customer') ?></th>
                     <th style="text-align: center"><?= 'Préstamo N°' ?></th>
                     <th style="text-align: center"><?= $this->lang->line('payments_loan') ?></th>
-                    <th style="text-align: center"><?= 'Cuota' ?></th>
-                    <th style="text-align: center"><?= $this->lang->line('loans_balance') ?></th>
+                    <th style="text-align: center"><?= 'Cuota N°' ?></th>
                     <th style="text-align: center"><?= $this->lang->line('payments_amount') ?></th>
+                    <th style="text-align: center"><?= 'Capital' ?></th>
+                    <th style="text-align: center"><?= 'Interés' ?></th>
                     <th style="text-align: center"><?= 'Multa' ?></th>
                     <th style="text-align: center"><?= 'Fecha de Pago' ?></th>
-                    <th style="text-align: center"><?= $this->lang->line('payments_teller') ?></th>
                     <th style="text-align: center; width: 2%"><?=$this->lang->line("common_action");?></th>
                 </tr>
             </thead>
@@ -81,18 +79,18 @@
 
         $("#datatable").dataTable({
             "aoColumnDefs": [
-                {'bSortable': false, 'aTargets': [0, 8]}
+                {'bSortable': false, 'aTargets': [0, 7]}
             ],
             "language": {
                 "url": "<?php echo site_url($this->config->item('language').".json"); ?>"
             },
             "processing": true,
             "serverSide": true,
-            "aLengthMenu": [[50, 100, 200, 100, 100000], [50, 100, 200, 100, "<?=$this->lang->line("common_all")?>"]],
+            "aLengthMenu": [[50, 100, 200, 100000], [50, 100, "<?=$this->lang->line("common_all")?>"]],
             "iDisplayLength": 50,
             "order": [1, "desc"],
             "ajax": {
-                "url": "<?php echo site_url("payments/data") ?>"
+                "url": "<?php echo site_url("payments/data_reporte") ?>"
             },
             "initComplete": function (settings, json) {
                 $("#datatable_filter").find("input[type='search']").attr("placeholder", "<?= $this->lang->line("common_search"); ?>");
@@ -100,17 +98,6 @@
         });
 
         enable_delete('<?php echo $this->lang->line($controller_name . "_confirm_delete") ?>', '<?php echo $this->lang->line($controller_name . "_none_selected") ?>');
-
-        $(".select_all_").click(function () {
-            if ($(this).is(":checked"))
-            {
-                $("input[name='chk[]']").prop("checked", true);
-            }
-            else
-            {
-                $("input[name='chk[]']").prop("checked", false);
-            }
-        });
 
     });
 
