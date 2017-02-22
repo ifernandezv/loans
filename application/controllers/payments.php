@@ -18,6 +18,11 @@ class Payments extends Secure_area implements iData_controller {
   function report() {
     $data['controller_name'] = strtolower(get_class());
     $data['form_width'] = $this->get_form_width();
+    $data['totales'] = $this->data_totales();
+    $data['desde'] = $this->input->post('desde');
+    $data['hasta'] = $this->input->post('hasta');
+    $data['customer'] = $this->input->post('customer');
+
     $this->load->view('payments/report', $data);
   }
 
@@ -218,6 +223,23 @@ class Payments extends Secure_area implements iData_controller {
         echo json_encode($data);
         exit;
     }
+
+  function data_totales() {
+    $totales = array(
+      'pagado' => 0,
+      'capital' => 0,
+      'interes' => 0,
+      'multa' => 0,
+    );
+    $payments = $this->Payment->get_data_reporte($_POST);
+    foreach ($payments->result() as $payment) {
+      $totales['pagado'] += $payment->paid_amount;
+      $totales['capital'] += $payment->paid_amount - $payment->interes;
+      $totales['interes'] += $payment->interes;
+      $totales['multa'] += $payment->multa;
+    }
+    return $totales;
+  }
 
   function data_reporte() {
     $index = isset($_GET['order'][0]['column']) ? $_GET['order'][0]['column'] : 1;
