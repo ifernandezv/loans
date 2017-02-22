@@ -487,7 +487,7 @@
     });
 
     $.validator.addMethod("greaterThanZero", function (value, element) {    
-        if ((parseFloat(value) > 0) && parseFloat(value) <= parseFloat($("#balance_amount").val())) {
+        if ((parseFloat(value) > 0) && parseFloat(value) <= parseFloat($("#old_balance_amount").val())) {
             return true;
         }
         return false;
