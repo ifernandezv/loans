@@ -50,6 +50,8 @@
                 <td><?= $apr ?></td>
             </tr>
             <tr>
+                <td>Préstamo N°</td>
+                <td><?= $loan->loan_id; ?></td>
                 <td><?= $this->lang->line("loans_apply_date"); ?></td>
                 <td><?= date("d/m/Y", $loan->loan_applied_date); ?></td>
                 <td><?= $this->lang->line("loans_payment_date"); ?></td>

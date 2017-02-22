@@ -504,7 +504,7 @@
               options.empty();
               console.log('data: ',data);
               $.each(data, function () {
-                  options.append($("<option />").val(this.loan_id).attr("data-loan_balance", this.loan_balance).attr("data-cuota", this.cuota).attr("data-numero_cuota", this.numero_cuota).attr("data-interes", this.interes).attr("data-fecha_pago", this.fecha_pago).attr("data-fecha_pago_teorica", this.fecha_pago_teorica).attr("data-fecha_ultimo_pago", this.loan_pago).text(this.loan_type + " (" + this.loan_amount + ") - " + this.loan_balance));
+                  options.append($("<option />").val(this.loan_id).attr("data-loan_balance", this.loan_balance).attr("data-cuota", this.cuota).attr("data-numero_cuota", this.numero_cuota).attr("data-interes", this.interes).attr("data-fecha_pago", this.fecha_pago).attr("data-fecha_pago_teorica", this.fecha_pago_teorica).attr("data-fecha_ultimo_pago", this.loan_pago).text('Préstamo N° '+this.loan_id+' --- '+this.loan_type + " (" + this.loan_amount + ") - " + this.loan_balance));
               });
 
               var balance = $('#loan_id option:selected').data('loan_balance')+'';
