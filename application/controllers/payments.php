@@ -98,9 +98,79 @@ class Payments extends Secure_area implements iData_controller {
       // end of pdf viewer
 
       $data['pdf_file'] = "/loans/downloads/reports/$filename.pdf";
+      $data['height'] = '450';
 
       $this->load->view("payments/print", $data);
     }
+
+  function imprimir_reporte() {
+    $parametros = array();
+    if (!empty($_GET['submit'])) {
+      $parametros = $_GET;
+    }
+    else {
+      $parametros['desde'] = date('d-m-Y',mktime(0,0,0,date("m")-1,date("d"),date("Y")));
+      $parametros['hasta'] = date('d-m-Y');
+      $parametros['customer'] = '';
+    }
+    $payments = $this->Payment->get_data_reporte($parametros);
+
+    $format_result = array();
+
+    $totales = array(
+      'pagado' => 0,
+      'capital' => 0,
+      'interes' => 0,
+      'multa' => 0,
+    );
+
+    foreach ($payments->result() as $payment) {
+      $totales['pagado'] += $payment->paid_amount;
+      $totales['capital'] += $payment->paid_amount - $payment->interes;
+      $totales['interes'] += $payment->interes;
+      $totales['multa'] += $payment->multa;
+      $format_result[] = array(
+        ucwords($payment->customer_name),
+        $payment->loan_id,
+        $payment->loan_type . " (" . to_currency($payment->loan_amount) . ")",
+        $payment->numero_cuota,
+        to_currency($payment->paid_amount),
+        to_currency($payment->paid_amount - $payment->interes),
+        to_currency($payment->interes),
+        to_currency($payment->multa),
+        date("d-m-Y", $payment->date_paid)
+      );
+    }
+    $totales['pagos'] = $payments->num_rows;
+
+    $data = array(
+      'totales' => $totales,
+      'data' => $format_result
+    );
+
+    $filename = "payments_".date("ymdhis");
+    // As PDF creation takes a bit of memory, we're saving the created file in /downloads/reports/
+    $pdfFilePath = FCPATH . "/downloads/reports/$filename.pdf";
+
+    ini_set('memory_limit', '32M'); // boost the memory limit if it's low <img src="https://davidsimpson.me/wp-includes/images/smilies/icon_wink.gif" alt=";)" class="wp-smiley">
+    $html = $this->load->view('payments/reporte_pdf', $data, true); // render the view into HTML
+
+    $this->load->library('pdf');
+
+    $params = '"en-GB-x","Letter","","",10,10,10,10,6,3';
+
+    $pdf = $this->pdf->load($params);
+
+    $pdf->SetFooter($_SERVER['HTTP_HOST'] . '|{PAGENO}|' . date(DATE_RFC822)); // Add a footer for good measure <img src="https://davidsimpson.me/wp-includes/images/smilies/icon_wink.gif" alt=";)" class="wp-smiley">
+    $pdf->WriteHTML($html); // write the HTML into the PDF
+    $pdf->Output($pdfFilePath, 'F'); // save to file because we can
+    // end of pdf viewer
+
+    $data_print['pdf_file'] = "/loans/downloads/reports/$filename.pdf";
+    $data_print['height'] = '900';
+
+    $this->load->view("payments/print", $data_print);
+  }
 
     function save($payment_id = -1) {
       $payment_data = array(
@@ -277,9 +347,7 @@ class Payments extends Secure_area implements iData_controller {
         to_currency($payment->paid_amount - $payment->interes),
         to_currency($payment->interes),
         to_currency($payment->multa),
-        date("d-m-Y", $payment->date_paid),
-        anchor('payments/view/' . $payment->loan_payment_id, $this->lang->line('common_view'), array('class' => 'modal_link btn btn-success', 'data-toggle' => 'modal', 'data-target' => '#payment_modal', "title" => $this->lang->line('payments_update'))) . " " .
-        anchor('payments/printIt/' . $payment->loan_payment_id, $this->lang->line('common_print'), array('class' => 'modal_link btn btn-default', 'data-toggle' => 'modal', 'data-target' => '#print_modal', "title" => $this->lang->line('payments_print')))
+        date("d-m-Y", $payment->date_paid)
       );
     }
 
