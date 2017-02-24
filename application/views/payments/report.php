@@ -23,6 +23,18 @@
     <div id="title" class="float_left"><i class="fa fa-paypal" style="font-size: 40px; color:#2B9EC4"></i> Reporte de pagos</div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="payment_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
 <?php echo form_open('payments/report'); ?>
 
 <div class="field_row clearfix">
@@ -129,6 +141,17 @@
               'class' => 'btn btn-primary'
           )
         );
+  echo anchor(
+        'payments/imprimir_reporte',
+        'Imprimir',
+        array(
+          'id' => 'imprimir',
+          'class' => 'modal_link btn btn-default',
+          'data-toggle' => 'modal',
+          'data-target' => '#print_modal',
+          "title" => 'Reporte'
+        )
+      );
   echo form_close();
 ?>
 <div class="row table-body">
@@ -166,7 +189,6 @@
           <th style="text-align: center"><?= 'Interés' ?></th>
           <th style="text-align: center"><?= 'Multa' ?></th>
           <th style="text-align: center"><?= 'Fecha de Pago' ?></th>
-          <th style="text-align: center; width: 2%"><?=$this->lang->line("common_action");?></th>
         </tr>
       </thead>
     </table>
@@ -227,7 +249,9 @@
     parameters += '&customer='+$('#customer').val();
 
     $('#get_values').val(parameters);
+    $('#imprimir').attr('href','payments/imprimir_reporte?'+parameters);
     console.log('get_values: ',$('#get_values').val());
+    console.log('imprimir: ',$('#imprimir'));
   }
 
   function post_payment_form_submit(response) {
