@@ -5,8 +5,8 @@
 
 </div>
 <div class="modal-body">
-    <object data="<?= $pdf_file; ?>" type="application/pdf" width="100%" height="450">
-        <embed src="<?= $pdf_file; ?>" type="application/pdf" width="100%" height="450" />
+    <object data="<?= $pdf_file; ?>" type="application/pdf" width="100%" height="<?= $height; ?>">
+        <embed src="<?= $pdf_file; ?>" type="application/pdf" width="100%" height="<?= $height; ?>" />
     </object>
 </div>
 
