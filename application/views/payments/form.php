@@ -331,7 +331,7 @@
     }
     $("#multa").val(multa.toFixed(2));
 
-    var dias = (fecha_pago - ultimo_pago) / (24 * 3600 * 1000);
+    var dias = parseInt((fecha_pago - ultimo_pago) / (24 * 3600 * 1000));
 
     $("#ultimo_pago").html(format_date(ultimo_pago));
     $("#n_cuota").html($('#numero_cuota').val());
