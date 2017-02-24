@@ -1,15 +1,22 @@
 <?php $this->load->view("partial/header"); ?>
 <style>
-    table#datatable td:nth-child(5), 
-    td:nth-child(6) {
-        text-align: right
-    }
-    table#datatable td:nth-child(2),
-    td:nth-child(7), 
-    td:nth-child(10) {
-        white-space: nowrap;
-        text-align: center;
-    }
+  table#datatable td:nth-child(5), 
+  td:nth-child(6) {
+    text-align: right
+  }
+  table#datatable td:nth-child(2),
+  td:nth-child(7), 
+  td:nth-child(10) {
+    white-space: nowrap;
+    text-align: center;
+  }
+  table#resultados td {
+    font-weight: bold;
+    font-size: 30px;
+  }
+  table#resultados td.resultado {
+    color: #000088;
+  }
 </style>
 
 <div id="title_bar">
@@ -32,7 +39,7 @@
                 array(
                   'name' => 'desde',
                   'id' => 'desde',
-                  'value' => empty($desde)?date("d-m-Y"):$desde,
+                  'value' => empty($desde)?date("d-m-Y",mktime(0,0,0,date("m")-1,date("d"),date("Y"))):$desde,
                   'class' => 'form-control',
                   'type' => 'datetime'
                 )
@@ -90,20 +97,28 @@
     <?php
       echo form_input(
               array(
-                'name' => 'inp-customer',
-                'id' => 'inp-customer',
+                'name' => 'inp_customer',
+                'id' => 'inp_customer',
                 'value' => '',
                 'class' => 'form-control',
                 'placeholder' => $this->lang->line("common_start_typing"),
-                'style' => 'display:""'
+                'style' => 'display:' . (empty($customer) ? '' : 'none')
               )
             );
     ?>
 
-    <span id="sp-customer" style="display: ''"></span>
+    <span id="sp-customer" style="display: <?= (empty($customer) ? 'none' : '') ?>">
+      <?= $inp_customer; ?>
+      <span>
+        <a href="javascript:void(0)" title="Remove Customer" class="btn-remove-row">
+          <i class="fa fa-times"></i>
+        </a>
+      </span>
+    </span>
     <input type="hidden" id="customer" name="customer" value="<?= $customer ?>" />
   </div>
 </div>
+<input type="hidden" id="get_values" name="get_values" value="" />
 
 <?php 
   echo form_submit(
@@ -120,14 +135,16 @@
   <div class="col-md-12">
     <table id="resultados" class="table table-hover table-bordered" cellspacing="0" width="100%">
       <tr>
+        <td style="text-align: center">Pagos</td>
+        <td style="text-align: center" class="resultado"><?= $totales['pagos'] ?></td>
         <td style="text-align: center">Pagado</td>
-        <td style="text-align: center"><?= $totales['pagado'] ?></td>
+        <td style="text-align: center" class="resultado"><?= $totales['pagado'] ?></td>
         <td style="text-align: center">Capital</td>
-        <td style="text-align: center"><?= $totales['capital'] ?></td>
+        <td style="text-align: center" class="resultado"><?= $totales['capital'] ?></td>
         <td style="text-align: center">Interés</td>
-        <td style="text-align: center"><?= $totales['interes'] ?></td>
+        <td style="text-align: center" class="resultado"><?= $totales['interes'] ?></td>
         <td style="text-align: center">Multas</td>
-        <td style="text-align: center"><?= $totales['multa'] ?></td>
+        <td style="text-align: center" class="resultado"><?= $totales['multa'] ?></td>
       </tr>
     </table>
   </div>
@@ -171,7 +188,7 @@
 
   }
   $(document).ready(function () {
-
+    update_get_string();
     $("#datatable").dataTable({
       "aoColumnDefs": [
         {'bSortable': false, 'aTargets': [0, 7]}
@@ -185,7 +202,7 @@
       "iDisplayLength": 20,
       "order": [1, "desc"],
       "ajax": {
-        "url": "<?php echo site_url("payments/data_reporte") ?>"
+        "url": "<?php echo site_url('payments/data_reporte') ?>?"+$('#get_values').val()
       },
       "initComplete": function (settings, json) {
         $("#datatable_filter").find("input[type='search']").attr("placeholder", "<?= $this->lang->line("common_search"); ?>");
@@ -201,6 +218,18 @@
     });
   });
 
+  function update_get_string() {
+    var parameters = '';
+    
+    parameters = 'submit=Cambiar';
+    parameters += '&desde='+$('#desde').val();
+    parameters += '&hasta='+$('#hasta').val();
+    parameters += '&customer='+$('#customer').val();
+
+    $('#get_values').val(parameters);
+    console.log('get_values: ',$('#get_values').val());
+  }
+
   function post_payment_form_submit(response) {
     if (!response.success) {
       set_feedback(response.message, 'error_message', true);
@@ -212,14 +241,14 @@
     }
   }
 
-  $('#inp-customer').autocomplete({
+  $('#inp_customer').autocomplete({
     serviceUrl: '<?php echo site_url("loans/customer_search"); ?>',
     onSelect: function (suggestion) {
-      $("#inp-customer-id").val(suggestion.data);
+      $("#inp_customer_id").val(suggestion.data);
       $("#customer").val(suggestion.data);
       $("#sp-customer").html(suggestion.value + ' <span><a href="javascript:void(0)" title="Remove Customer" class="btn-remove-row"><i class="fa fa-times"></i></a></span>');
       $("#sp-customer").show();
-      $("#inp-customer").hide();
+      $("#inp_customer").hide();
     }
   });
 
@@ -246,11 +275,15 @@
     });
   }
 
+  $(document).on("click", ".btn-remove-row", function () {
+      clear_customer();
+  });
+
   function clear_customer() {
       $("#sp-customer").hide();
       $("#sp-customer").html("");
-      $("#inp-customer").val("");
-      $("#inp-customer").show();
+      $("#inp_customer").val("");
+      $("#inp_customer").show();
       $("#customer").val("");
       var options = $("#loan_id");
       options.empty();
