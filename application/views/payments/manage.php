@@ -14,9 +14,18 @@
 
 <div id="title_bar">
     <div id="title" class="float_left"><i class="fa fa-paypal" style="font-size: 40px; color:#2B9EC4"></i> <?php echo $this->lang->line('common_list_of') . ' ' . $this->lang->line('module_' . $controller_name); ?></div>
-    <div id="new_button">  
+    <div id="new_button">
         <?php
-        echo anchor("$controller_name/view/-1", "<div class='btn btn-primary' style='float: left; margin-right:20px;'><span>" . $this->lang->line($controller_name . '_new') . "</span></div>", array('data-toggle' => 'modal', 'data-target' => '#payment_modal', 'title' => $this->lang->line($controller_name . '_new')));
+        echo anchor(
+          "$controller_name/report",
+          "<div class='btn btn-primary' style='float: left; margin-right:20px; color:#00ffaa;'><span>Reporte</span></div>",
+          array(
+            'target' => '_blank',
+          )
+        );
+        ?>
+        <?php
+        echo anchor("$controller_name/view/-1", "<div class='btn btn-primary' style='margin-right:20px;'><span>" . $this->lang->line($controller_name . '_new') . "</span></div>", array('data-toggle' => 'modal', 'data-target' => '#payment_modal', 'title' => $this->lang->line($controller_name . '_new')));
         ?>
     </div>
 </div>
