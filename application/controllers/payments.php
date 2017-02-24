@@ -22,6 +22,7 @@ class Payments extends Secure_area implements iData_controller {
     $data['desde'] = $this->input->post('desde');
     $data['hasta'] = $this->input->post('hasta');
     $data['customer'] = $this->input->post('customer');
+    $data['inp_customer'] = $this->input->post('inp_customer');
 
     $this->load->view('payments/report', $data);
   }
@@ -231,25 +232,38 @@ class Payments extends Secure_area implements iData_controller {
       'interes' => 0,
       'multa' => 0,
     );
-    $payments = $this->Payment->get_data_reporte($_POST);
+    $parametros = array();
+    if (!empty($_POST['submit'])) {
+      $parametros = $_POST;
+    }
+    else {
+      $parametros['desde'] = date('d-m-Y',mktime(0,0,0,date("m")-1,date("d"),date("Y")));
+      $parametros['hasta'] = date('d-m-Y');
+      $parametros['customer'] = '';
+    }
+
+    $payments = $this->Payment->get_data_reporte($parametros);
     foreach ($payments->result() as $payment) {
       $totales['pagado'] += $payment->paid_amount;
       $totales['capital'] += $payment->paid_amount - $payment->interes;
       $totales['interes'] += $payment->interes;
       $totales['multa'] += $payment->multa;
     }
+    $totales['pagos'] = $payments->num_rows;
     return $totales;
   }
 
   function data_reporte() {
-    $index = isset($_GET['order'][0]['column']) ? $_GET['order'][0]['column'] : 1;
-    $dir = isset($_GET['order'][0]['dir']) ? $_GET['order'][0]['dir'] : "asc";
-    $order = array("index" => $index, "direction" => $dir);
-    $length = isset($_GET['length'])?$_GET['length']:50;
-    $start = isset($_GET['start'])?$_GET['start']:0;
-    $key = isset($_GET['search']['value'])?$_GET['search']['value']:"";
-
-    $payments = $this->Payment->get_all($length, $start, $key, $order);
+    $parametros = array();
+    if (!empty($_GET['submit'])) {
+      $parametros = $_GET;
+    }
+    else {
+      $parametros['desde'] = date('d-m-Y',mktime(0,0,0,date("m")-1,date("d"),date("Y")));
+      $parametros['hasta'] = date('d-m-Y');
+      $parametros['customer'] = '';
+    }
+    $payments = $this->Payment->get_data_reporte($parametros);
 
     $format_result = array();
 
@@ -263,7 +277,7 @@ class Payments extends Secure_area implements iData_controller {
         to_currency($payment->paid_amount - $payment->interes),
         to_currency($payment->interes),
         to_currency($payment->multa),
-        date("d/m/Y", $payment->date_paid),
+        date("d-m-Y", $payment->date_paid),
         anchor('payments/view/' . $payment->loan_payment_id, $this->lang->line('common_view'), array('class' => 'modal_link btn btn-success', 'data-toggle' => 'modal', 'data-target' => '#payment_modal', "title" => $this->lang->line('payments_update'))) . " " .
         anchor('payments/printIt/' . $payment->loan_payment_id, $this->lang->line('common_print'), array('class' => 'modal_link btn btn-default', 'data-toggle' => 'modal', 'data-target' => '#print_modal', "title" => $this->lang->line('payments_print')))
       );
