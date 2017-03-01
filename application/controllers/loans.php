@@ -853,8 +853,9 @@ class Loans extends Secure_area implements iData_controller {
         return $this->Loan->count_overdues();
     }
 
-    function customer_search() {
-        $suggestions = $this->Customer->get_customer_search_suggestions($this->input->get('query'), 30);
+    function customer_search($only_loans = false) {
+        $suggestions = 
+          $this->Customer->get_customer_search_suggestions($this->input->get('query'), 30, $only_loans);
         $data = $tmp = array();
 
         foreach ($suggestions as $suggestion):

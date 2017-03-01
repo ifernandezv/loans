@@ -448,7 +448,7 @@
       });
 
       $('#inp-customer').autocomplete({
-          serviceUrl: '<?php echo site_url("loans/customer_search"); ?>',
+          serviceUrl: '<?php echo site_url("loans/customer_search/true"); ?>',
           onSelect: function (suggestion) {
               $("#inp-customer-id").val(suggestion.data);
               $("#customer").val(suggestion.data);

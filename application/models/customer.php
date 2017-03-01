@@ -294,7 +294,7 @@ class Customer extends Person {
       Get search suggestions to find customers
      */
 
-    function get_customer_search_suggestions($search, $limit = 25)
+    function get_customer_search_suggestions($search, $limit = 25, $only_loans = false)
     {
         $suggestions = array();
 
@@ -304,6 +304,10 @@ class Customer extends Person {
     last_name LIKE '%" . $this->db->escape_like_str($search) . "%' or 
     CONCAT(`first_name`,' ',`last_name`) LIKE '%" . $this->db->escape_like_str($search) . "%') and deleted=0");
         $this->db->order_by("last_name", "asc");
+        if ( !empty($only_loans)) {
+          $this->db->where('customers.person_id in (SELECT customer_id FROM loans.kpos_loans)');
+        }
+
         $by_name = $this->db->get();
         foreach ($by_name->result() as $row)
         {
