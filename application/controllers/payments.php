@@ -383,7 +383,7 @@ class Payments extends Secure_area implements iData_controller {
         $loan_type_info = $this->Loan_type->get_info($loan->loan_type_id);
 
         $loan->numero_cuota = $this->Payment->count_payments($loan->loan_id) + $ajuste_numero_cuota;
-        $loan->first_payment = $this->Payment->first_payment($loan->loan_id);
+        $loan->first_payment = $loan->loan_payment_date; // $this->Payment->first_payment($loan->loan_id);
         $factor = 1;
         $fecha_pago_teorica = '';
 
@@ -408,7 +408,7 @@ class Payments extends Secure_area implements iData_controller {
           $fecha_pago_teorica = strtotime("+$factor month", $loan->first_payment);
         }
         else {
-          $fecha_pago_teorica = strtotime('now');
+          $fecha_pago_teorica = $loan->loan_payment_date;
         }
 
         $fecha_cobro = $loan->loan_payment_date;    //FECHA Q SE DEBE COBRAR 
