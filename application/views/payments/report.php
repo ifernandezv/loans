@@ -128,6 +128,7 @@
       </span>
     </span>
     <input type="hidden" id="customer" name="customer" value="<?= $customer ?>" />
+    <input type="hidden" id="customer_name" name="customer_name" value="<?= $customer_name ?>" />
   </div>
 </div>
 <input type="hidden" id="get_values" name="get_values" value="" />
@@ -247,11 +248,10 @@
     parameters += '&desde='+$('#desde').val();
     parameters += '&hasta='+$('#hasta').val();
     parameters += '&customer='+$('#customer').val();
+    parameters += '&customer_name='+encodeURI($('#customer_name').val());
 
     $('#get_values').val(parameters);
     $('#imprimir').attr('href','payments/imprimir_reporte?'+parameters);
-    console.log('get_values: ',$('#get_values').val());
-    console.log('imprimir: ',$('#imprimir'));
   }
 
   function post_payment_form_submit(response) {
@@ -270,6 +270,7 @@
     onSelect: function (suggestion) {
       $("#inp_customer_id").val(suggestion.data);
       $("#customer").val(suggestion.data);
+      $("#customer_name").val(suggestion.value);
       $("#sp-customer").html(suggestion.value + ' <span><a href="javascript:void(0)" title="Remove Customer" class="btn-remove-row"><i class="fa fa-times"></i></a></span>');
       $("#sp-customer").show();
       $("#inp_customer").hide();
@@ -284,6 +285,7 @@
       success: function (suggestion) {
         if ($.trim(suggestion.value) !== "") {
           $("#customer").val(suggestion.data);
+          $("#customer_name").val(suggestion.value);
           $("#sp-customer").html(suggestion.value + ' <span><a href="javascript:void(0)" title="Remove Customer" class="btn-remove-row"><i class="fa fa-times"></i></a></span>');
           $("#sp-customer").show();
           $("#inp-customer").hide();
@@ -309,6 +311,7 @@
       $("#inp_customer").val("");
       $("#inp_customer").show();
       $("#customer").val("");
+      $("#customer_name").val('');
       var options = $("#loan_id");
       options.empty();
       $("#inp-customer-id").val("");
