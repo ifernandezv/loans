@@ -327,11 +327,14 @@
     var fecha_pago = new Date(fp_arr[2],fp_arr[1]-1,fp_arr[0]);
 
     if (fecha_pago > fecha_pago_teorica) {
-      multa = multa_por_dia * parseInt((fecha_pago - fecha_pago_teorica) / (24 * 3600 * 1000));
+      var dias_multa = parseInt(fecha_pago / (24 * 3600 * 1000)) 
+                     - parseInt(fecha_pago_teorica / (24 * 3600 * 1000));
+      multa = multa_por_dia * dias_multa;
     }
     $("#multa").val(multa.toFixed(2));
 
-    var dias = parseInt((fecha_pago - ultimo_pago) / (24 * 3600 * 1000));
+    var dias = parseInt(fecha_pago / (24 * 3600 * 1000)) 
+             - parseInt(ultimo_pago / (24 * 3600 * 1000));
 
     $("#ultimo_pago").html(format_date(ultimo_pago));
     $("#n_cuota").html($('#numero_cuota').val());
@@ -356,9 +359,6 @@
     $("#balance_info").html(balance_info.toFixed(2));
     $('#interes_pagado').val(interes.toFixed(2));
 
-    console.log('capital: ',capital);
-    console.log('balance: ',balance);
-    console.log('dias: ', dias);
   }
 
   //validation and submit handling
