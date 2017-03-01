@@ -22,6 +22,7 @@ class Payments extends Secure_area implements iData_controller {
     $data['desde'] = $this->input->post('desde');
     $data['hasta'] = $this->input->post('hasta');
     $data['customer'] = $this->input->post('customer');
+    $data['customer_name'] = $this->input->post('customer_name');
     $data['inp_customer'] = $this->input->post('inp_customer');
 
     $this->load->view('payments/report', $data);
@@ -112,6 +113,7 @@ class Payments extends Secure_area implements iData_controller {
       $parametros['desde'] = date('d-m-Y',mktime(0,0,0,date("m")-1,date("d"),date("Y")));
       $parametros['hasta'] = date('d-m-Y');
       $parametros['customer'] = '';
+      $parametros['customer_name'] = '';
     }
     $payments = $this->Payment->get_data_reporte($parametros);
 
@@ -145,7 +147,10 @@ class Payments extends Secure_area implements iData_controller {
 
     $data = array(
       'totales' => $totales,
-      'data' => $format_result
+      'data' => $format_result,
+      'desde' => $parametros['desde'],
+      'hasta' => $parametros['hasta'],
+      'cliente' => $parametros['customer_name'],
     );
 
     $filename = "payments_".date("ymdhis");

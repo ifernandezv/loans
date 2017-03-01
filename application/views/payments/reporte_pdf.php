@@ -32,6 +32,25 @@
       </tr>
     </table>
 
+    <table width="100%" id="tabla2">
+      <tr> <td colspan="2" style="padding:-10px;"><hr></td></tr>
+
+      <tr>
+        <td style="font-size:15px">Desde:</td>
+        <td align="right"><?= $desde; ?></td>
+      </tr>
+      <tr>
+        <td style="font-size:15px">Hasta:</td>
+        <td align="right"><?= $hasta; ?></td>
+      </tr>
+      <tr>
+        <td style="font-size:15px">Cliente:</td>
+        <td align="right"><?= empty($cliente)?'Todos':$cliente; ?></td>
+      </tr>
+
+      <tr> <td colspan="2" style="padding:-10px;"><hr></td></tr>
+    </table>
+
     <div class="row table-body">
       <div class="col-md-12">
         <table id="resultados" class="table table-hover table-bordered" cellspacing="0" width="100%">
