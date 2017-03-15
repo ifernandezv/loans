@@ -59,7 +59,6 @@
     </div>
 </div>
 <div id="feedback_bar"></div>
-<?php $this->load->view("partial/footer"); ?>
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -92,11 +91,11 @@
             },
             "processing": true,
             "serverSide": true,
-            "aLengthMenu": [[50, 100, 200, 100000], [50, 100, 200, "<?=$this->lang->line("common_all")?>"]],
+            "aLengthMenu": [[50, 100, 200, 100000], [50, 100, 200, "<?=$this->lang->line('common_all')?>"]],
             "iDisplayLength": 50,
             "order": [1, "desc"],
             "ajax": {
-                "url": "<?php echo site_url("employees/data") ?>",
+                "url": "<?php echo site_url('employees/data') ?>",
             },
             "initComplete": function (settings, json) {
                 $("#datatable_filter").find("input[type='search']").attr("placeholder", "<?= $this->lang->line("common_search"); ?>");
@@ -120,3 +119,5 @@
         }
     }
 </script>
+
+<?php $this->load->view("partial/footer"); ?>
