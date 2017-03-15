@@ -5,14 +5,13 @@ class Employee extends Person {
       Determines if a given person_id is an employee
      */
 
-    function exists($person_id)
-    {
-        $this->db->from('pdv.employees as employees');
-        $this->db->join('pdv.people as people', 'people.person_id = employees.person_id');
-        $this->db->where('employees.person_id', $person_id);
-        $query = $this->db->get();
+    function exists($person_id) {
+      $this->db->from('pdv.employees as employees');
+      $this->db->join('pdv.people as people', 'people.person_id = employees.person_id');
+      $this->db->where('employees.person_id', $person_id);
+      $query = $this->db->get();
 
-        return ($query->num_rows() == 1);
+      return ($query->num_rows() == 1);
     }
 
     /*
@@ -106,47 +105,40 @@ class Employee extends Person {
       Inserts or updates an employee
      */
 
-    function save(&$person_data, &$employee_data, &$grants_data, $employee_id = false)
-    {
-        $success = false;
+    function save(&$person_data, &$employee_data, &$grants_data, $employee_id = false) {
+      $success = false;
 
-        //Run these queries as a transaction, we want to make sure we do all or nothing
-        $this->db->trans_start();
+      //Run these queries as a transaction, we want to make sure we do all or nothing
+      $this->db->trans_start();
 
-        if (parent::save($person_data, $employee_id))
-        {
-            if (!$employee_id or ! $this->exists($employee_id))
-            {
-                $employee_data['person_id'] = $employee_id = $person_data['person_id'];
-                $success = $this->db->insert('employees', $employee_data);
-            }
-            else
-            {
-                $this->db->where('person_id', $employee_id);
-                $success = $this->db->update('employees', $employee_data);
-            }
-
-            //We have either inserted or updated a new employee, now lets set permissions. 
-            if ($success)
-            {
-                //First lets clear out any grants the employee currently has.
-                $success = $this->db->delete('grants', array('person_id' => $employee_id));
-
-                //Now insert the new grants
-                if ($success)
-                {
-                    foreach ($grants_data as $permission_id)
-                    {
-                        $success = $this->db->insert('grants', array(
-                            'permission_id' => $permission_id,
-                            'person_id' => $employee_id));
-                    }
-                }
-            }
+      if (parent::save($person_data, $employee_id)) {
+        if (!$employee_id or ! $this->exists($employee_id)) {
+          $employee_data['person_id'] = $employee_id = $person_data['person_id'];
+          $success = $this->db->insert('employees', $employee_data);
+        }
+        else {
+          $this->db->where('person_id', $employee_id);
+          $success = $this->db->update('employees', $employee_data);
         }
 
-        $this->db->trans_complete();
-        return $success;
+        //We have either inserted or updated a new employee, now lets set permissions. 
+        if ($success) {
+          //First lets clear out any grants the employee currently has.
+          $success = $this->db->delete('grants', array('person_id' => $employee_id));
+
+          //Now insert the new grants
+          if ($success) {
+            foreach ($grants_data as $permission_id) {
+              $success = $this->db->insert('grants', array(
+                'permission_id' => $permission_id,
+                'person_id' => $employee_id));
+            }
+          }
+        }
+      }
+
+      $this->db->trans_complete();
+      return $success;
     }
 
     /*

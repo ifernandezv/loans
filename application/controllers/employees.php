@@ -60,55 +60,66 @@ class Employees extends Person_controller {
       Inserts/updates an employee
      */
 
-    function save($employee_id = -1)
-    {
-        $person_data = array(
-            'first_name' => $this->input->post('first_name'),
-            'last_name' => $this->input->post('last_name'),
-            'email' => $this->input->post('email'),
-            'phone_number' => $this->input->post('phone_number'),
-            'address_1' => $this->input->post('address_1'),
-            'address_2' => $this->input->post('address_2'),
-            'city' => $this->input->post('city'),
-            'state' => $this->input->post('state'),
-            'zip' => $this->input->post('zip'),
-            'country' => $this->input->post('country'),
-            'comments' => $this->input->post('comments')
+    function save($employee_id = -1) {
+      $person_data = array(
+        'first_name' => $this->input->post('first_name'),
+        'last_name' => $this->input->post('last_name'),
+        'email' => $this->input->post('email'),
+        'phone_number' => $this->input->post('phone_number'),
+        'address_1' => $this->input->post('address_1'),
+        'address_2' => $this->input->post('address_2'),
+        'city' => $this->input->post('city'),
+        'state' => $this->input->post('state'),
+        'zip' => $this->input->post('zip'),
+        'country' => $this->input->post('country'),
+        'comments' => $this->input->post('comments')
+      );
+      $grants_data = $this->input->post("grants") != false ? $this->input->post("grants") : array();
+
+      //Password has been changed OR first time password set
+      if ($this->input->post('password') != '') {
+        $employee_data = array(
+          'username' => $this->input->post('username'),
+          'password' => md5($this->input->post('password'))
         );
-        $grants_data = $this->input->post("grants") != false ? $this->input->post("grants") : array();
+      }
+      else { //Password not changed
+        $employee_data = array('username' => $this->input->post('username'));
+      }
 
-        //Password has been changed OR first time password set
-        if ($this->input->post('password') != '')
-        {
-            $employee_data = array(
-                'username' => $this->input->post('username'),
-                'password' => md5($this->input->post('password'))
-            );
+      if ($this->Employee->save($person_data, $employee_data, $grants_data, $employee_id)) {
+        //New employee
+        if ($employee_id == -1) {
+          echo json_encode(
+            array(
+              'success' => true,
+              'message' => $this->lang->line('employees_successful_adding') . ' ' .
+                $person_data['first_name'] . ' ' . $person_data['last_name'],
+              'person_id' => $employee_data['person_id']
+            )
+          );
         }
-        else //Password not changed
-        {
-            $employee_data = array('username' => $this->input->post('username'));
+        else { //previous employee
+          echo json_encode(
+            array(
+              'success' => true,
+              'message' => $this->lang->line('employees_successful_updating') . ' ' .
+                $person_data['first_name'] . ' ' . $person_data['last_name'],
+              'person_id' => $employee_id
+            )
+          );
         }
-
-        if ($this->Employee->save($person_data, $employee_data, $grants_data, $employee_id))
-        {
-            //New employee
-            if ($employee_id == -1)
-            {
-                echo json_encode(array('success' => true, 'message' => $this->lang->line('employees_successful_adding') . ' ' .
-                    $person_data['first_name'] . ' ' . $person_data['last_name'], 'person_id' => $employee_data['person_id']));
-            }
-            else //previous employee
-            {
-                echo json_encode(array('success' => true, 'message' => $this->lang->line('employees_successful_updating') . ' ' .
-                    $person_data['first_name'] . ' ' . $person_data['last_name'], 'person_id' => $employee_id));
-            }
-        }
-        else//failure
-        {
-            echo json_encode(array('success' => false, 'message' => $this->lang->line('employees_error_adding_updating') . ' ' .
-                $person_data['first_name'] . ' ' . $person_data['last_name'], 'person_id' => -1));
-        }
+      }
+      else { //failure
+        echo json_encode(
+          array(
+            'success' => false,
+            'message' => $this->lang->line('employees_error_adding_updating') . ' ' .
+              $person_data['first_name'] . ' ' . $person_data['last_name'],
+            'person_id' => -1
+          )
+        );
+      }
     }
 
     /*
