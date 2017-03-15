@@ -13,12 +13,6 @@ echo form_open('employees/save/' . $person_info->person_id, array('id' => 'emplo
     <div id="required_fields_message"><?php echo $this->lang->line('common_fields_required_message'); ?></div>
     <ul id="error_message_box"></ul>
 
-    <fieldset id="employee_basic_info">
-      <legend><?php echo $this->lang->line("employees_basic_information"); ?></legend>
-      <?php $this->load->view("people/form_basic_info"); ?>
-    </fieldset>
-
-
     <fieldset id="employee_login_info">
       <legend><?php echo $this->lang->line("employees_login_info"); ?></legend>
       <div class="field_row clearfix">  
@@ -81,7 +75,7 @@ echo form_open('employees/save/' . $person_info->person_id, array('id' => 'emplo
             if ($permission->module_id == $module->module_id) {
               $lang_line = $this->lang->line('reports_' . $exploded_permission[1]);
               $lang_line = empty($lang_line) ? $exploded_permission[1] : $lang_line;
-              ?>
+          ?>
               <ul>
                 <li>
                   <?php echo form_checkbox("grants[]", $permission->permission_id, $this->Employee->has_grant($permission->permission_id, $person_info->person_id)); ?>
