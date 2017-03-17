@@ -304,7 +304,7 @@
         <div class="field_row clearfix">
           <?php echo form_label($this->lang->line('loans_agent') . ':', 'agent', array('class' => 'wide')); ?>
           <div class='form_field'>
-            <?php 
+            <?php
               if ($user_info->person_id === '1') {
                 echo form_dropdown(
                   "sel_agent", 
@@ -314,7 +314,7 @@
                 );
               }
               else {
-                 ucwords($user_info->first_name . ' ' . $user_info->last_name);
+                 echo ucwords($employees[$user_info->person_id]);
               }
             ?>
             <?php
