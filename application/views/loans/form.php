@@ -722,7 +722,7 @@ echo form_close();
       $("#sp-customer").html($('#customer_name').val() + ' <span><a href="javascript:void(0)" title="Remove Customer" class="btn-remove-row"><i class="fa fa-times"></i></a></span>');
       $("#sp-customer").show();
       $("#inp-customer").hide();
-//      $('#inp-customer').val($('#customer_name').val());
+      $('#inp-customer').val($('#customer_name').val());
       $('#account').val($('#customer_id').val());
       var description = 'Préstamo generado por la venta ' + $('#sale_id').val() + '.';
       $('#description').val(description);
