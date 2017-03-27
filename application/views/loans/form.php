@@ -910,6 +910,9 @@ echo form_close();
           success: function (response) {
             post_loan_form_submit(response);
           },
+          error: function (response) {
+            console.log('error response: ',response);
+          },
           dataType: 'json'
         });
       },
