@@ -387,7 +387,7 @@ class Loans extends Secure_area implements iData_controller {
 
         $payable = $this->_calculate_mortgage($loan->loan_amount, $loan_type->percent_charge1, $loan_type->term, $period);
 
-        $filename = "Plan_de_Pagos_".ucwords($customer->first_name ."_". $customer->last_name)."-Prestamo_N".$loan_id."__".time();
+        $filename = "Plan_de_Pagos_".ucwords(str_replace(' ','_',$customer->first_name) ."_". str_replace(' ','_',$customer->last_name))."-Prestamo_N".$loan_id."__".time();
         // As PDF creation takes a bit of memory, we're saving the created file in /downloads/reports/
         $pdfFilePath = FCPATH . "/downloads/reports/$filename.pdf";
 
