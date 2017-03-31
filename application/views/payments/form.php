@@ -361,6 +361,39 @@
 
   }
 
+  $(document).keydown(function(event) {
+    var mycode = event.keyCode;
+
+    console.log('mycode: ',mycode);
+
+    if (mycode == 13) {
+      event.preventDefault();
+      event.originalEvent.keyCode = 0;
+    }
+
+    //F4
+    if (mycode == 115)
+    {
+      event.preventDefault();
+      $("#finish_sale_button").focus();
+      event.originalEvent.keyCode = 0;
+    }
+
+    //F7
+    if (mycode == 118)
+    {
+      event.preventDefault();
+      $("#payment_types").focus();
+      event.originalEvent.keyCode = 0;
+    }
+
+    //ESC
+    if (mycode == 27)
+    {
+        $("#cancel_sale_button").focus();
+    }  
+  });
+
   //validation and submit handling
   $(document).ready(function () {
     $("#div-form").height($(window).height() - 250);
