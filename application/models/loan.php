@@ -228,7 +228,7 @@ class Loan extends CI_Model {
         SELECT loan_payment_id AS `maxid` 
         FROM `kpos_loan_payments` 
         WHERE loan_id = '.$loan_id.' AND delete_flag = 0
-        ORDER BY date_paid desc
+        ORDER BY date_paid desc, loan_payment_id desc
         LIMIT 1');
       if ($query->num_rows() == 1){
         return $query->row()->maxid;
