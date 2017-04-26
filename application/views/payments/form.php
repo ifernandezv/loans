@@ -400,6 +400,10 @@
 
     ajustar_campos();
 
+    $("#btn-save").click(function () {
+      $(this).prop("disabled", true);
+    });
+
     $("#inp-customer-id").change(function () {
       get_customer_by_id($(this).val());
     });
