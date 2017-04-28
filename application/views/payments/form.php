@@ -402,6 +402,7 @@
 
     $("#btn-save").click(function () {
       $(this).prop("disabled", true);
+      $("#payment_form").submit();
     });
 
     $("#inp-customer-id").change(function () {
