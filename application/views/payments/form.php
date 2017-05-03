@@ -289,16 +289,8 @@
   <button type="button" class="btn btn-default" data-dismiss="modal" id="btn-close"><?=$this->lang->line("common_close");?></button>
   <button id="btn-edit" class="btn btn-danger" type="button"><?= $this->lang->line('common_edit'); ?></button>
 
-  <?php 
-    echo form_submit(
-            array(
-                'name' => 'submit',
-                'id' => 'btn-save',
-                'value' => $this->lang->line('common_save'),
-                'class' => 'btn btn-primary'
-            )
-          );
-  ?>
+  <button type="button" class="btn btn-primary" name="submit" id="btn-save"><?= $this->lang->line("common_save"); ?></button>
+
 </div>
 
 <?php
