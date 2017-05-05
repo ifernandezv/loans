@@ -8,6 +8,7 @@ class Payment extends CI_Model {
   function exists($payment_id) {
     $this->db->from('loan_payments');
     $this->db->where('loan_payment_id', $payment_id);
+    $this->db->where('delete_flag', 0);
     $query = $this->db->get();
 
     return ($query->num_rows() == 1);
@@ -29,7 +30,7 @@ class Payment extends CI_Model {
                CONCAT(teller.first_name, ' ',teller.last_name) as teller_name, 
                (SELECT count(*) from kpos_loan_payments
                 WHERE loan_payment_id <= lp.loan_payment_id
-                AND loan_id = lp.loan_id) as numero_cuota,
+                AND loan_id = lp.loan_id AND delete_flag = 0) as numero_cuota,
                loan_types.name as loan_type,
                loans.loan_amount,
                loans.loan_balance";
@@ -74,7 +75,7 @@ class Payment extends CI_Model {
                CONCAT(teller.first_name, ' ',teller.last_name) as teller_name, 
                (SELECT count(*) from kpos_loan_payments
                 WHERE loan_payment_id <= lp.loan_payment_id
-                AND loan_id = lp.loan_id) as numero_cuota,
+                AND loan_id = lp.loan_id AND delete_flag = 0) as numero_cuota,
                loan_types.name as loan_type,
                loans.loan_amount,
                loans.loan_balance";
@@ -106,7 +107,7 @@ class Payment extends CI_Model {
   }
 
   function count_all() {
-    $this->db->where("loan_payments.delete_flag", 0);
+    $this->db->where('delete_flag', 0);
     $this->db->from('loan_payments');
     return $this->db->count_all_results();
   }
@@ -150,7 +151,7 @@ class Payment extends CI_Model {
                loan_types.name as loan_type,
                (SELECT count(*) from kpos_loan_payments
                 WHERE loan_payment_id <= lp.loan_payment_id
-                AND loan_id = lp.loan_id) as numero_cuota";
+                AND loan_id = lp.loan_id AND delete_flag = 0) as numero_cuota";
 
     $this->db->select($select, FALSE);
     $this->db->from('loan_payments as lp');
@@ -159,6 +160,7 @@ class Payment extends CI_Model {
     $this->db->join('loans as l', 'l.loan_id = lp.loan_id', 'LEFT');
     $this->db->join('loan_types', 'loan_types.loan_type_id = l.loan_type_id', 'LEFT');
     $this->db->where('loan_payment_id', $payment_id);
+    $this->db->where('delete_flag', 0);
 
 //    $result = $this->db->_compile_select();
 //    error_log('query en get_info: '.print_r($result,true));
@@ -300,9 +302,9 @@ description LIKE '%" . $this->db->escape_like_str($search) . "%'");
     $this->db->where("customer_id >", 0);
     $this->db->where("delete_flag", 0);
     $this->db->where("loan_balance > ", 0);
-//    $result = $this->db->_compile_select();
+
     $result = $this->db->get()->result();
-//    error_log('result en get_loans: '.print_r($result,true));
+
     return $result;
   }
 }
