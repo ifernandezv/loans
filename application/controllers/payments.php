@@ -248,6 +248,19 @@ class Payments extends Secure_area implements iData_controller {
         }
     }
 
+    function delete_payment($payment_id)
+    {
+        
+        if ($this->Payment->delete($payment_id))
+        {
+            echo json_encode(array('success' => true, 'message' => $this->lang->line('loans_successful_deleted') . ' 1 ' . $this->lang->line('payments_one_or_multiple')));
+        }
+        else
+        {
+            echo json_encode(array('success' => false, 'message' => $this->lang->line('payments_cannot_be_deleted')));
+        }
+    }
+
     /*
       get the width for the add/edit form
      */
@@ -271,23 +284,36 @@ class Payments extends Secure_area implements iData_controller {
 
         $format_result = array();
 
-        foreach ($payments->result() as $payment)
-        {
-            $format_result[] = array(
-                "<input type='checkbox' name='chk[]' id='payment_$payment->loan_payment_id' value='" . $payment->loan_payment_id . "'/>",
-                $payment->loan_payment_id,
-                ucwords($payment->customer_name),
-                $payment->loan_id,
-                $payment->loan_type . " (" . to_currency($payment->loan_amount) . ")",
-                $payment->numero_cuota,
-                to_currency($payment->balance_amount),
-                to_currency($payment->paid_amount),
-                to_currency($payment->multa),
-                date("d/m/Y", $payment->date_paid),
-                ucwords($payment->teller_name),
-                anchor('payments/view/' . $payment->loan_payment_id, $this->lang->line('common_view'), array('class' => 'modal_link btn btn-success', 'data-toggle' => 'modal', 'data-target' => '#payment_modal', "title" => $this->lang->line('payments_update'))) . " " .
-                anchor('payments/printIt/' . $payment->loan_payment_id, $this->lang->line('common_print'), array('class' => 'modal_link btn btn-default', 'data-toggle' => 'modal', 'data-target' => '#print_modal', "title" => $this->lang->line('payments_print')))
-            );
+        foreach ($payments->result() as $payment) {
+          $last_payment_id = $this->Payment->last_payment($payment->loan_id);
+          $boton_borrar = '&nbsp';
+          if ($payment->loan_payment_id == $last_payment_id) {
+            $boton_borrar =
+              anchor('payments/delete_payment/'.$payment->loan_payment_id,
+                'Borrar', 
+                array(
+                  'id' => 'delete_'.$payment->loan_payment_id,
+                  'class' => 'btn btn-danger btn-delete'
+                )
+              );
+            //$boton_borrar =
+              //'<button type="button" class="btn btn-danger btn-delete" id="'.$payment->loan_payment_id.'">Borrar</button>';
+          }
+          $format_result[] = array(
+            $boton_borrar,
+            $payment->loan_payment_id,
+            ucwords($payment->customer_name),
+            $payment->loan_id,
+            $payment->loan_type . " (" . to_currency($payment->loan_amount) . ")",
+            $payment->numero_cuota,
+            to_currency($payment->balance_amount),
+            to_currency($payment->paid_amount),
+            to_currency($payment->multa),
+            date("d/m/Y", $payment->date_paid),
+            ucwords($payment->teller_name),
+            anchor('payments/view/' . $payment->loan_payment_id, $this->lang->line('common_view'), array('class' => 'modal_link btn btn-success', 'data-toggle' => 'modal', 'data-target' => '#payment_modal', "title" => $this->lang->line('payments_update'))) . " " .
+            anchor('payments/printIt/' . $payment->loan_payment_id, $this->lang->line('common_print'), array('class' => 'modal_link btn btn-default', 'data-toggle' => 'modal', 'data-target' => '#print_modal', "title" => $this->lang->line('payments_print')))
+          );
         }
 
         $data = array(

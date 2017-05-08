@@ -123,12 +123,26 @@ class Payment extends CI_Model {
     $this->db->where('loan_id', $loan_id);
     $this->db->where('delete_flag', 0);
     $this->db->from('loan_payments');
-    $this->db->order_by('date_paid','asc');
+    $this->db->order_by('loan_payment_id','asc');
     $this->db->limit(1);
     $query = $this->db->get();
 
     if ($query->num_rows() == 1) {
       return $query->row()->date_paid;
+    }
+    return '';
+  }
+
+  function last_payment($loan_id) {
+    $this->db->where('loan_id', $loan_id);
+    $this->db->where('delete_flag', 0);
+    $this->db->from('loan_payments');
+    $this->db->order_by('loan_payment_id','desc');
+    $this->db->limit(1);
+    $query = $this->db->get();
+
+    if ($query->num_rows() == 1) {
+      return $query->row()->loan_payment_id;
     }
     return '';
   }
@@ -160,7 +174,7 @@ class Payment extends CI_Model {
     $this->db->join('loans as l', 'l.loan_id = lp.loan_id', 'LEFT');
     $this->db->join('loan_types', 'loan_types.loan_type_id = l.loan_type_id', 'LEFT');
     $this->db->where('loan_payment_id', $payment_id);
-    $this->db->where('delete_flag', 0);
+    $this->db->where('lp.delete_flag', 0);
 
 //    $result = $this->db->_compile_select();
 //    error_log('query en get_info: '.print_r($result,true));
@@ -229,6 +243,10 @@ class Payment extends CI_Model {
    */
 
   function delete($payment_id) {
+    $payment_info = $this->get_info($payment_id); error_log('payment_info: '.print_r($payment_info,true));
+    $old_balance = $payment_info->balance_amount + $payment_info->paid_amount;
+    $data = array('loan_balance' => $old_balance);
+    $this->Loan->save($data,$payment_info->loan_id);
     $this->db->where('loan_payment_id', $payment_id);
     return $this->db->update('loan_payments', array('delete_flag' => 1));
   }

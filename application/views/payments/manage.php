@@ -55,26 +55,26 @@
 <!-- /.modal -->
 
 <div class="row table-body">
-    <div class="col-md-12">
-        <table id="datatable" class="table table-hover table-bordered" cellspacing="0" width="100%">
-            <thead>
-                <tr>
-                    <th style="text-align: center; width: 1%"><input type="checkbox" class="select_all_" /></th>
-                    <th style="text-align: center"><?= $this->lang->line('common_trans_id') ?></th>
-                    <th style="text-align: center"><?= $this->lang->line('loans_customer') ?></th>
-                    <th style="text-align: center"><?= 'Préstamo N°' ?></th>
-                    <th style="text-align: center"><?= $this->lang->line('payments_loan') ?></th>
-                    <th style="text-align: center"><?= 'Cuota' ?></th>
-                    <th style="text-align: center"><?= $this->lang->line('loans_balance') ?></th>
-                    <th style="text-align: center"><?= $this->lang->line('payments_amount') ?></th>
-                    <th style="text-align: center"><?= 'Multa' ?></th>
-                    <th style="text-align: center"><?= 'Fecha de Pago' ?></th>
-                    <th style="text-align: center"><?= $this->lang->line('payments_teller') ?></th>
-                    <th style="text-align: center; width: 2%"><?=$this->lang->line("common_action");?></th>
-                </tr>
-            </thead>
-        </table>
-    </div>
+  <div class="col-md-12">
+    <table id="datatable" class="table table-hover table-bordered" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+          <th style="text-align: center; width: 1%"><!-- input type="checkbox" class="select_all_" / --></th>
+          <th style="text-align: center"><?= $this->lang->line('common_trans_id') ?></th>
+          <th style="text-align: center"><?= $this->lang->line('loans_customer') ?></th>
+          <th style="text-align: center"><?= 'Préstamo N°' ?></th>
+          <th style="text-align: center"><?= $this->lang->line('payments_loan') ?></th>
+          <th style="text-align: center"><?= 'Cuota' ?></th>
+          <th style="text-align: center"><?= $this->lang->line('loans_balance') ?></th>
+          <th style="text-align: center"><?= $this->lang->line('payments_amount') ?></th>
+          <th style="text-align: center"><?= 'Multa' ?></th>
+          <th style="text-align: center"><?= 'Fecha de Pago' ?></th>
+          <th style="text-align: center"><?= $this->lang->line('payments_teller') ?></th>
+          <th style="text-align: center; width: 2%"><?=$this->lang->line("common_action");?></th>
+        </tr>
+      </thead>
+    </table>
+  </div>
 </div>
 
 <div id="feedback_bar"></div>
@@ -108,7 +108,38 @@
             }
         });
 
-        enable_delete('<?php echo $this->lang->line($controller_name . "_confirm_delete") ?>', '<?php echo $this->lang->line($controller_name . "_none_selected") ?>');
+        //enable_delete('<?php echo $this->lang->line($controller_name . "_confirm_delete") ?>', '<?php echo $this->lang->line($controller_name . "_none_selected") ?>');
+
+
+        console.log($('.btn-delete'));
+
+        $('[id^=delete_]').click(function(event) {
+          event.preventDefault();
+          $(this).prop("disabled", true);
+          var url = $(this).attr('href');
+          console.log('url: ', url);
+          if (confirm('url: '+url)) {
+              do_delete($(this).attr('href'));
+          }
+        });
+
+    var row_ids = get_selected_values();
+
+    $.post(url, {'ids[]': row_ids, "softtoken" : $('#token_hash').val()}, function (response)
+    {
+        //delete was successful, remove checkbox rows
+        if (response.success)
+        {
+            update_sortable_table();
+            set_feedback(response.message, 'success_message', false);
+        }
+        else
+        {
+            set_feedback(response.message, 'error_message', true);
+        }
+
+    }, "json");
+
 
         $(".select_all_").click(function () {
             if ($(this).is(":checked"))
