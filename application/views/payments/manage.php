@@ -123,7 +123,7 @@
     });
 
     function init_delete_buttons() {
-      var mensaje = '¿Está seguro que desea borrar este préstamo?'
+      var mensaje = '¿Está seguro que desea borrar este pago?'
       $('.btn-delete').each(function(i,e) {
         var url = 'payments/delete_payment/'+e.id;
         $(this).click(function(event) {
