@@ -105,41 +105,9 @@
             },
             "initComplete": function (settings, json) {
                 $("#datatable_filter").find("input[type='search']").attr("placeholder", "<?= $this->lang->line("common_search"); ?>");
+                init_delete_buttons();
             }
         });
-
-        //enable_delete('<?php echo $this->lang->line($controller_name . "_confirm_delete") ?>', '<?php echo $this->lang->line($controller_name . "_none_selected") ?>');
-
-
-        console.log($('.btn-delete'));
-
-        $('[id^=delete_]').click(function(event) {
-          event.preventDefault();
-          $(this).prop("disabled", true);
-          var url = $(this).attr('href');
-          console.log('url: ', url);
-          if (confirm('url: '+url)) {
-              do_delete($(this).attr('href'));
-          }
-        });
-
-    var row_ids = get_selected_values();
-
-    $.post(url, {'ids[]': row_ids, "softtoken" : $('#token_hash').val()}, function (response)
-    {
-        //delete was successful, remove checkbox rows
-        if (response.success)
-        {
-            update_sortable_table();
-            set_feedback(response.message, 'success_message', false);
-        }
-        else
-        {
-            set_feedback(response.message, 'error_message', true);
-        }
-
-    }, "json");
-
 
         $(".select_all_").click(function () {
             if ($(this).is(":checked"))
@@ -153,6 +121,29 @@
         });
 
     });
+
+    function init_delete_buttons() {
+      var mensaje = '¿Está seguro que desea borrar este préstamo?'
+      $('.btn-delete').each(function(i,e) {
+        var url = 'payments/delete_payment/'+e.id;
+        $(this).click(function(event) {
+//          event.preventDefault();
+          if (confirm(mensaje)) {
+            $.post(url, {}, function (response) {
+              //delete was successful, remove checkbox rows
+              if (response.success) {
+                init_delete_buttons();
+                set_feedback(response.message, 'success_message', false);
+                window.location.reload();
+              }
+              else {
+                set_feedback(response.message, 'error_message', true);
+              }
+            }, "json");
+          }
+        });
+      });
+    }
 
     function post_payment_form_submit(response)
     {

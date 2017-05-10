@@ -296,8 +296,8 @@ class Payments extends Secure_area implements iData_controller {
                   'class' => 'btn btn-danger btn-delete'
                 )
               );
-            //$boton_borrar =
-              //'<button type="button" class="btn btn-danger btn-delete" id="'.$payment->loan_payment_id.'">Borrar</button>';
+            $boton_borrar =
+              '<button type="button" class="btn btn-danger btn-delete" id="'.$payment->loan_payment_id.'">Borrar</button>';
           }
           $format_result[] = array(
             $boton_borrar,
