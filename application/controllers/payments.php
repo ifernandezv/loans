@@ -158,7 +158,7 @@ class Payments extends Secure_area implements iData_controller {
     // As PDF creation takes a bit of memory, we're saving the created file in /downloads/reports/
     $pdfFilePath = FCPATH . "/downloads/reports/$filename.pdf";
 
-    ini_set('memory_limit', '32M'); // boost the memory limit if it's low <img src="https://davidsimpson.me/wp-includes/images/smilies/icon_wink.gif" alt=";)" class="wp-smiley">
+    ini_set('memory_limit', '128M'); // boost the memory limit if it's low <img src="https://davidsimpson.me/wp-includes/images/smilies/icon_wink.gif" alt=";)" class="wp-smiley">
     $html = $this->load->view('payments/reporte_pdf', $data, true); // render the view into HTML
 
     $this->load->library('pdf');
