@@ -4,6 +4,14 @@
     <link rel="stylesheet" rev="stylesheet" href="<?php echo base_url(); ?>bootstrap3/css/bootstrap.css" />
     <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>font-awesome-4.3.0/css/font-awesome.min.css" />
     <style>
+      table#tabla1 td:nth-child(2),
+      table#tabla1 td:nth-child(4) {
+        width: 3em;
+        text-align: center;
+      }
+      table#tabla1 td:nth-child(1) {
+        white-space: nowrap;
+      }
       ul.checkbox-grid li {
         display: block;
         float: left;
@@ -77,7 +85,7 @@
             <tr>
               <th style="text-align: center"><?= $this->lang->line('loans_customer') ?></th>
               <th style="text-align: center"><?= 'Préstamo N°' ?></th>
-              <th style="text-align: center"><?= $this->lang->line('payments_loan') ?></th>
+              <th style="text-align: center"><?= 'Saldo' ?></th>
               <th style="text-align: center"><?= 'Cuota N°' ?></th>
               <th style="text-align: center"><?= $this->lang->line('payments_amount') ?></th>
               <th style="text-align: center"><?= 'Capital' ?></th>

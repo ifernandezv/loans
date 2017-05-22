@@ -135,7 +135,7 @@ class Payments extends Secure_area implements iData_controller {
       $format_result[] = array(
         ucwords($payment->customer_name),
         $payment->loan_id,
-        $payment->loan_type . " (" . to_currency($payment->loan_amount) . ")",
+        to_currency($payment->loan_amount),
         $payment->numero_cuota,
         to_currency($payment->paid_amount),
         to_currency($payment->paid_amount - $payment->interes),
