@@ -243,12 +243,19 @@ class Payment extends CI_Model {
    */
 
   function delete($payment_id) {
-    $payment_info = $this->get_info($payment_id); error_log('payment_info: '.print_r($payment_info,true));
-    $old_balance = $payment_info->balance_amount + $payment_info->paid_amount;
+    $payment_info = $this->get_info($payment_id);
+    $old_balance = $payment_info->balance_amount + $payment_info->paid_amount - $payment_info->interes;
     $data = array('loan_balance' => $old_balance);
-    $this->Loan->save($data,$payment_info->loan_id);
+    if($payment_info->numero_cuota == 1) {
+      $loan_info = $this->Loan->get_info($payment_info->loan_id);
+      $data['loan_pago'] = $loan_info->loan_applied_date;
+      $data['loan_balance'] = $loan_info->loan_amount;
+      $data['loan_applied_date'] = $loan_info->loan_applied_date;
+    }
     $this->db->where('loan_payment_id', $payment_id);
-    return $this->db->update('loan_payments', array('delete_flag' => 1));
+    $this->db->update('loan_payments', array('delete_flag' => 1));
+
+    return $this->Loan->save($data,$payment_info->loan_id);
   }
 
   /*
