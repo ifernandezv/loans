@@ -16,6 +16,7 @@ class pdf {
         {
             $param = '"en-GB-x","Letter","","",10,10,10,10,6,3';
         }
+        return new mPDF("en-GB-x",array(216,280),10,10,10,10,6,3);
 
         return new mPDF($param);
     }
