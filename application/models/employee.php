@@ -14,6 +14,17 @@ class Employee extends Person {
       return ($query->num_rows() == 1);
     }
 
+    function es_privilegiado() {
+      $session = $this->session->userdata;
+      $employee = $this->get_info($session['person_id']);
+
+      $this->db->from('pdv.app_config');
+      $this->db->where('key','employee_id');
+      $usuario_especial = $this->db->get()->result();
+
+      return $usuario_especial[0]->value == $employee->id;
+    }
+
     /*
       Returns all the employees
      */
@@ -59,11 +70,11 @@ class Employee extends Person {
       Gets information about a particular employee
      */
 
-    function get_info($employee_id)
+    function get_info($person_id)
     {
         $this->db->from('pdv.employees as employees');
         $this->db->join('pdv.people as people', 'people.person_id = employees.person_id');
-        $this->db->where('employees.person_id', $employee_id);
+        $this->db->where('employees.person_id', $person_id);
         $query = $this->db->get();
 
         if ($query->num_rows() == 1)

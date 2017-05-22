@@ -12,6 +12,7 @@ class Payments extends Secure_area implements iData_controller {
   function index() {
     $data['controller_name'] = strtolower(get_class());
     $data['form_width'] = $this->get_form_width();
+
     $this->load->view('payments/manage', $data);
   }
 
@@ -280,6 +281,7 @@ class Payments extends Secure_area implements iData_controller {
         $start = isset($_GET['start'])?$_GET['start']:0;
         $key = isset($_GET['search']['value'])?$_GET['search']['value']:"";
 
+        $es_privilegiado = $this->Employee->es_privilegiado();
         $payments = $this->Payment->get_all($length, $start, $key, $order);
 
         $format_result = array();
@@ -287,7 +289,7 @@ class Payments extends Secure_area implements iData_controller {
         foreach ($payments->result() as $payment) {
           $last_payment_id = $this->Payment->last_payment($payment->loan_id);
           $boton_borrar = '&nbsp';
-          if ($payment->loan_payment_id == $last_payment_id) {
+          if ($es_privilegiado && ($payment->loan_payment_id == $last_payment_id)) {
             $boton_borrar =
               anchor('payments/delete_payment/'.$payment->loan_payment_id,
                 'Borrar', 
@@ -317,9 +319,9 @@ class Payments extends Secure_area implements iData_controller {
         }
 
         $data = array(
-            "recordsTotal" => $this->Payment->count_all(),
-            "recordsFiltered" => $this->Payment->count_all(),
-            "data" => $format_result
+          'recordsTotal' => $this->Payment->count_all(),
+          'recordsFiltered' => $this->Payment->count_all(),
+          'data' => $format_result
         );
 
         echo json_encode($data);
