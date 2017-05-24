@@ -87,7 +87,7 @@ class Payment extends CI_Model {
     $this->db->join('loans', 'loans.loan_id = lp.loan_id', 'LEFT');
     $this->db->join('loan_types as loan_types', 'loan_types.loan_type_id = loans.loan_type_id', 'LEFT');
 
-    $this->db->order_by("loan_payment_id", "desc");
+    $this->db->order_by("customer_name", "asc");
 
     if (!empty($desde)) {
       $this->db->where('lp.date_paid >= '.$desde);
