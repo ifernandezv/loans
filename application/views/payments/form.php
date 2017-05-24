@@ -2,7 +2,11 @@
 
 <input type="hidden" id="loan_payment_id" name="loan_payment_id" value="<?= $payment_info->loan_payment_id; ?>" />
 <input type="hidden" id="multa_por_dia" name="multa_por_dia" value="<?= $multa_por_dia; ?>" />
-
+<style>
+#pago_total {
+	font-weight:bold;
+}
+</style>
 <div class="modal-header">
   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
   <h4 class="modal-title"><?php echo $this->lang->line("payments_info"); ?></h4>
@@ -254,6 +258,18 @@
         </div>
 
         <div class="field_row clearfix">
+          <?php
+            echo form_label('Total:',
+                            'pago_total',
+                            array('class' => 'wide')
+                  );
+          ?>
+          <div class='form_field'>
+            <span name="pago_total" id="pago_total"> </span>
+          </div>
+        </div>
+
+        <div class="field_row clearfix">
             <?php echo form_label($this->lang->line('payments_teller') . ':', 'teller', array('class' => 'wide')); ?>
             <div class='form_field'>
                 <?php echo isset($payment_info->teller_name) ? ucwords($payment_info->teller_name) : ucwords($user_info->first_name . " " . $user_info->last_name); ?>
@@ -350,7 +366,15 @@
     var balance_info = balance - capital;
     $("#balance_info").html(balance_info.toFixed(2));
     $('#interes_pagado').val(interes.toFixed(2));
+    ajustar_total();
 
+  }
+
+  function ajustar_total() {
+    var multa = parseFloat($('#multa').val());
+    var cuota = parseFloat($('#paid_amount').val());
+    var pago_total = cuota + multa;
+    $("#pago_total").html(pago_total.toFixed(2));
   }
 
   $(document).keydown(function(event) {
@@ -448,6 +472,10 @@
 
     $(document).on("change", "#loan_id,#paid_amount", function () {
       ajustar_campos();
+    });
+
+    $(document).on("change", "#multa", function () {
+      ajustar_total();
     });
 
     $(document).on("dp.change", "#paiddate", function () {
