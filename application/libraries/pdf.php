@@ -14,7 +14,7 @@ class pdf {
 
         if ($param == NULL)
         {
-          return new mPDF("en-GB-x",array(216,280),10,10,10,10,6,3);
+          return new mPDF("en-GB-x",array(216,280),'','',20,20,10,10,6,3);
         }
 
         return new mPDF($param);

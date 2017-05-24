@@ -4,6 +4,9 @@
     <link rel="stylesheet" rev="stylesheet" href="<?php echo base_url(); ?>bootstrap3/css/bootstrap.css" />
     <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>font-awesome-4.3.0/css/font-awesome.min.css" />
     <style>
+      table#tabla1 {
+        padding: 20px;
+      }
       table#tabla1 td:nth-child(2),
       table#tabla1 td:nth-child(4) {
         width: 3em;
