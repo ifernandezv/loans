@@ -855,6 +855,20 @@ class Loans extends Secure_area implements iData_controller {
 
     function customer_search($only_loans = false) {
         $suggestions = 
+          $this->Customer->get_customer_search_suggestions($this->input->get('query'), 30, $only_loans);
+        $data = $tmp = array();
+        foreach ($suggestions as $suggestion):
+            $t = explode("|", $suggestion);
+            $tmp = array("value" => $t[1], "data" => $t[0]);
+            $data[] = $tmp;
+        endforeach;
+
+        echo json_encode(array("suggestions" => $data));
+        exit;
+    }
+
+    function report_customer_search($only_loans = false) {
+        $suggestions = 
           $this->Loan->get_loan_search_suggestions($this->input->get('query'));
         $data = $tmp = array();
         foreach ($suggestions as $suggestion):
