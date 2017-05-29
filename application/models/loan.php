@@ -396,25 +396,29 @@ class Loan extends CI_Model {
         return $suggestions;
     }
 
-    function get_loan_search_suggestions($search, $limit = 25)
-    {
-        $suggestions = array();
+    function get_loan_search_suggestions($search, $limit = 25) {
+      $suggestions = array();
 
-        $this->db->from('loans');
-        $this->db->like('account', $search);
-        $this->db->order_by("account", "asc");
-        $by_name = $this->db->get();
-        foreach ($by_name->result() as $row)
-        {
-            $suggestions[] = 'LOAN ' . $row->item_kit_id . '|' . $row->name;
-        }
+      $select = "loans.*, CONCAT(customer.first_name, ' ', customer.last_name) as customer_name";
+      $this->db->select($select, FALSE);
+      $this->db->from('loans');
+      $this->db->join('pdv.people as customer', 'customer.person_id = loans.customer_id', 'LEFT');
 
-        //only return $limit suggestions
-        if (count($suggestions > $limit))
-        {
-            $suggestions = array_slice($suggestions, 0, $limit);
-        }
-        return $suggestions;
+      $this->db->having('customer_name LIKE ', '%'.$search.'%',false);
+      $this->db->order_by("customer_name", "asc");
+      $by_name = $this->db->get();
+      foreach ($by_name->result() as $row) {
+        $r = $row->loan_id.': '.$row->customer_name;
+        $r .= ' ('.to_currency($row->loan_amount).' ';
+        $r .= date('d-m-Y',$row->loan_applied_date).')';
+        $suggestions[] = $row->loan_id . '|' . $r;
+      }
+
+      //only return $limit suggestions
+      if (count($suggestions > $limit)) {
+          $suggestions = array_slice($suggestions, 0, $limit);
+      }
+      return $suggestions;
     }
 
     /*

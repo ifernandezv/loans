@@ -100,7 +100,7 @@
 
 <div class="field_row clearfix">
   <?php 
-    echo  form_label($this->lang->line('loans_customer') . ':',
+    echo  form_label('Préstamo:',
                     'inp-customer',
                     array('class' => 'wide')
           );

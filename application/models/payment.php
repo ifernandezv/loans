@@ -100,7 +100,7 @@ class Payment extends CI_Model {
     }
 
     if (!empty($cliente)) {
-      $this->db->where('lp.customer_id = '.$cliente);
+      $this->db->where('lp.loan_id = '.$cliente);
     }
 
     $this->db->where('lp.delete_flag', 0);
