@@ -167,6 +167,8 @@ class Payments extends Secure_area implements iData_controller {
 
     $pdf = $this->pdf->load();
 
+    // $pdf->simpleTables = true;
+    // $pdf->packTableData = true;
     $pdf->SetFooter($_SERVER['HTTP_HOST'] . '|{PAGENO}|' . date(DATE_RFC822)); // Add a footer for good measure <img src="https://davidsimpson.me/wp-includes/images/smilies/icon_wink.gif" alt=";)" class="wp-smiley">
     $pdf->WriteHTML($html); // write the HTML into the PDF
     $pdf->Output($pdfFilePath, 'F'); // save to file because we can
